@@ -1,36 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>Wins Overlay</title>
+<title>Overlay</title>
 
 <style>
-body {
+html, body {
   margin: 0;
+  padding: 0;
   background: transparent;
   overflow: hidden;
-  font-family: 'Segoe UI', Arial, sans-serif;
 }
 
-/* overlay */
-.box {
-  position: fixed;
-  top: 60px;
-  left: 60px;
-  font-size: 48px;
+/* 🔥 overlay */
+.overlay {
+  position: absolute;
+  top: 40px;
+  left: 40px;
+
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  font-size: 40px;
   font-weight: 700;
   color: white;
-  text-shadow:
-    0 0 10px rgba(0,0,0,0.8),
-    0 0 20px rgba(0,0,0,0.6);
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+
+  text-shadow: 0 0 10px black, 0 0 20px black;
+
+  white-space: nowrap;
 }
 
-/* número */
 #num {
-  min-width: 50px;
+  min-width: 30px;
   text-align: center;
 }
 
@@ -38,65 +40,88 @@ body {
   color: #ff3b3b;
 }
 
-/* painel */
-#controls {
+/* 🎮 painel bonito */
+.panel {
   position: fixed;
   bottom: 20px;
   left: 20px;
-  background: rgba(0,0,0,0.85);
-  padding: 15px;
+  width: 220px;
+
+  background: rgba(15,15,15,0.95);
   border-radius: 12px;
+  padding: 15px;
+
   color: white;
-  font-size: 14px;
+  font-family: Arial;
+
   display: none;
-  width: 200px;
+
+  box-shadow: 0 0 20px #00ffcc33;
 }
 
-#controls input {
-  width: 100%;
-  margin: 5px 0;
+.panel h2 {
+  margin: 0 0 10px;
+  text-align: center;
+  color: #00ffcc;
 }
 
-button {
-  margin: 5px 0;
-  padding: 6px;
+.panel button {
   width: 100%;
+  margin: 5px 0;
+  padding: 8px;
+
+  border: none;
+  border-radius: 6px;
+
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.add { background: #00ffcc; color: black; }
+.sub { background: #ff3b3b; }
+.reset { background: orange; color: black; }
+
+.panel input {
+  width: 100%;
+  margin: 5px 0;
+  padding: 5px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="box">
-  <span>🏆</span>
-  <span id="num">0</span>
-  <span id="max">/10</span>
-  <span id="label">wins</span>
+<div class="overlay">
+  🏆 <span id="num">0</span><span id="max">/10</span> <span id="label">wins</span>
 </div>
 
-<div id="controls">
-  <b>CONTROLE</b><br><br>
+<div class="panel" id="panel">
+  <h2>CONTROL</h2>
 
-  ↑ ↓ = + - → alterar<br>
-  0 → reset<br>
-  Home → travar<br><br>
-
-  <button onclick="add()">+1</button>
-  <button onclick="sub()">-1</button>
-  <button onclick="reset()">Reset</button>
+  <button class="add" onclick="add()">+1</button>
+  <button class="sub" onclick="sub()">-1</button>
+  <button class="reset" onclick="reset()">Reset</button>
 
   <hr>
 
-  🎯 Meta:
+  Meta:
   <input id="maxInput" type="number" placeholder="Ex: 10">
 
-  📝 Texto:
+  Texto:
   <input id="labelInput" type="text" placeholder="Ex: wins">
 
-  ✏️ Valor manual:
+  Valor:
   <input id="manualInput" type="number" placeholder="Ex: 5">
 
-  <button onclick="applySettings()">Aplicar</button>
+  <button onclick="apply()">Aplicar</button>
+
+  <hr>
+
+  <small>
+  ↑ ↓ + - = → alterar<br>
+  0 → reset<br>
+  HOME → lock
+  </small>
 </div>
 
 <script type="module">
@@ -116,7 +141,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// 🔥 agora salva TUDO no Firebase
 const winsRef = ref(db, "overlay/wins");
 const maxRef = ref(db, "overlay/max");
 const labelRef = ref(db, "overlay/label");
@@ -129,37 +153,29 @@ const maxEl = document.getElementById("max");
 const labelEl = document.getElementById("label");
 
 // mostrar painel só no control
-const params = new URLSearchParams(window.location.search);
+const params = new URLSearchParams(location.search);
 if (params.get("view") === "control") {
-  document.getElementById("controls").style.display = "block";
+  document.getElementById("panel").style.display = "block";
 }
 
-// render
-function render() {
+// 🔥 sincronização
+onValue(winsRef, s => {
+  wins = s.val() ?? 0;
   num.textContent = wins;
   num.classList.toggle("negativo", wins < 0);
-}
-
-// 🔥 sync wins
-onValue(winsRef, (snap) => {
-  wins = snap.val() ?? 0;
-  render();
 });
 
-// 🔥 sync meta
-onValue(maxRef, (snap) => {
-  const v = snap.val() ?? 10;
-  maxEl.textContent = "/" + v;
+onValue(maxRef, s => {
+  maxEl.textContent = "/" + (s.val() ?? 10);
 });
 
-// 🔥 sync texto
-onValue(labelRef, (snap) => {
-  const v = snap.val() ?? "wins";
-  labelEl.textContent = v;
+onValue(labelRef, s => {
+  labelEl.textContent = s.val() ?? "wins";
 });
 
 // teclado
 document.addEventListener("keydown", async (e) => {
+
   if (e.key === "Home") {
     locked = !locked;
     return;
@@ -167,33 +183,30 @@ document.addEventListener("keydown", async (e) => {
 
   if (locked) return;
 
-  if (e.key === "ArrowUp" || e.key === "=" || e.key === "+") {
+  if (["ArrowUp","=","+"].includes(e.key))
     await set(winsRef, wins + 1);
-  }
 
-  if (e.key === "ArrowDown" || e.key === "-") {
+  if (["ArrowDown","-"].includes(e.key))
     await set(winsRef, wins - 1);
-  }
 
-  if (e.key === "0") {
+  if (e.key === "0")
     await set(winsRef, 0);
-  }
 });
 
 // botões
-window.add = async () => await set(winsRef, wins + 1);
-window.sub = async () => await set(winsRef, wins - 1);
-window.reset = async () => await set(winsRef, 0);
+window.add = () => set(winsRef, wins + 1);
+window.sub = () => set(winsRef, wins - 1);
+window.reset = () => set(winsRef, 0);
 
-// 🔥 aplicar mudanças (agora salva no Firebase)
-window.applySettings = async () => {
-  const maxVal = document.getElementById("maxInput").value;
-  const labelVal = document.getElementById("labelInput").value;
-  const manualVal = document.getElementById("manualInput").value;
+// aplicar alterações
+window.apply = async () => {
+  const m = maxInput.value;
+  const l = labelInput.value;
+  const v = manualInput.value;
 
-  if (maxVal) await set(maxRef, Number(maxVal));
-  if (labelVal) await set(labelRef, labelVal);
-  if (manualVal !== "") await set(winsRef, Number(manualVal));
+  if (m) await set(maxRef, Number(m));
+  if (l) await set(labelRef, l);
+  if (v !== "") await set(winsRef, Number(v));
 };
 </script>
 
