@@ -1034,10 +1034,33 @@
       });
 
       document.addEventListener("keydown", async (event) => {
-        if (event.key === "Home") {
-          await set(lockedRef, !locked);
-          return;
-        }
+  const keys = ["Home", "ArrowUp", "ArrowDown", "=", "+", "-", "0"];
+
+  if (keys.includes(event.key)) {
+    event.preventDefault();
+  }
+
+  if (event.key === "Home") {
+    await set(lockedRef, !locked);
+    return;
+  }
+
+  if (locked) return;
+
+  if (["ArrowUp", "=", "+"].includes(event.key)) {
+    await set(winsRef, wins + 1);
+    return;
+  }
+
+  if (["ArrowDown", "-"].includes(event.key)) {
+    await set(winsRef, wins - 1);
+    return;
+  }
+
+  if (event.key === "0") {
+    await set(winsRef, 0);
+  }
+});
 
         if (locked) return;
 
