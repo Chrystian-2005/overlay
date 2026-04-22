@@ -32,18 +32,34 @@ body {
 #num {
   min-width: 70px;
   text-align: center;
-  transition: 0.2s;
 }
 
 .negativo {
   color: #ff3b3b;
-  text-shadow:
-    0 0 10px rgba(255,0,0,0.8),
-    0 0 20px rgba(255,0,0,0.6);
 }
 
-.label {
-  opacity: 0.9;
+#controls {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  background: rgba(0,0,0,0.8);
+  padding: 15px;
+  border-radius: 10px;
+  color: white;
+  font-size: 14px;
+  display: none;
+  width: 200px;
+}
+
+#controls input {
+  width: 100%;
+  margin: 5px 0;
+}
+
+button {
+  margin: 5px 0;
+  padding: 6px;
+  width: 100%;
 }
 </style>
 </head>
@@ -53,8 +69,34 @@ body {
 <div class="box" id="box">
   <span>🏆</span>
   <span id="num">0</span>
-  <span>/10</span>
-  <span class="label">wins</span>
+  <span id="max">/10</span>
+  <span id="label">wins</span>
+</div>
+
+<div id="controls">
+  <b>CONTROLE</b><br><br>
+
+  ⬆️ ou = → +1<br>
+  ⬇️ ou - → -1<br>
+  0 → reset<br>
+  Home → travar<br><br>
+
+  <button onclick="add()">+1</button>
+  <button onclick="sub()">-1</button>
+  <button onclick="reset()">Reset</button>
+
+  <hr>
+
+  🎯 Meta:
+  <input id="maxInput" type="number" placeholder="Ex: 10">
+
+  📝 Texto:
+  <input id="labelInput" type="text" placeholder="Ex: wins">
+
+  ✏️ Setar valor:
+  <input id="manualInput" type="number" placeholder="Ex: 5">
+
+  <button onclick="applySettings()">Aplicar</button>
 </div>
 
 <script type="module">
@@ -79,37 +121,28 @@ let wins = 0;
 let locked = false;
 
 const num = document.getElementById("num");
-const box = document.getElementById("box");
+const maxEl = document.getElementById("max");
+const labelEl = document.getElementById("label");
 
-// posição salva
-const savedX = localStorage.getItem("overlayX");
-const savedY = localStorage.getItem("overlayY");
-
-if (savedX && savedY) {
-  box.style.left = savedX + "px";
-  box.style.top = savedY + "px";
+// mostrar painel só se for control
+const params = new URLSearchParams(window.location.search);
+if (params.get("view") === "control") {
+  document.getElementById("controls").style.display = "block";
 }
 
 function render() {
   num.textContent = wins;
-
-  if (wins < 0) {
-    num.classList.add("negativo");
-  } else {
-    num.classList.remove("negativo");
-  }
+  num.classList.toggle("negativo", wins < 0);
 }
 
-// 🔥 sincronização Firebase
+// Firebase sync
 onValue(winsRef, (snapshot) => {
-  const value = snapshot.val();
-  wins = typeof value === "number" ? value : 0;
+  wins = snapshot.val() || 0;
   render();
 });
 
-// 🎮 teclas
+// teclado
 document.addEventListener("keydown", async (e) => {
-
   if (e.key === "Home") {
     locked = !locked;
     return;
@@ -117,53 +150,34 @@ document.addEventListener("keydown", async (e) => {
 
   if (locked) return;
 
-  // subir (seta ↑ ou =)
   if (e.key === "ArrowUp" || e.key === "=") {
     await set(winsRef, wins + 1);
   }
 
-  // descer (seta ↓ ou -)
   if (e.key === "ArrowDown" || e.key === "-") {
     await set(winsRef, wins - 1);
   }
 
-  // zerar
   if (e.key === "0") {
     await set(winsRef, 0);
   }
 });
 
-// arrastar
-let dragging = false;
-let offsetX = 0;
-let offsetY = 0;
+// botões
+window.add = async () => await set(winsRef, wins + 1);
+window.sub = async () => await set(winsRef, wins - 1);
+window.reset = async () => await set(winsRef, 0);
 
-box.addEventListener("mousedown", (e) => {
-  dragging = true;
-  offsetX = e.clientX - box.offsetLeft;
-  offsetY = e.clientY - box.offsetTop;
-  box.style.cursor = "grabbing";
-});
+// aplicar mudanças
+window.applySettings = () => {
+  const maxVal = document.getElementById("maxInput").value;
+  const labelVal = document.getElementById("labelInput").value;
+  const manualVal = document.getElementById("manualInput").value;
 
-document.addEventListener("mousemove", (e) => {
-  if (dragging) {
-    const newX = e.clientX - offsetX;
-    const newY = e.clientY - offsetY;
-
-    box.style.left = newX + "px";
-    box.style.top = newY + "px";
-
-    localStorage.setItem("overlayX", newX);
-    localStorage.setItem("overlayY", newY);
-  }
-});
-
-document.addEventListener("mouseup", () => {
-  dragging = false;
-  box.style.cursor = "grab";
-});
-
-render();
+  if (maxVal) maxEl.textContent = "/" + maxVal;
+  if (labelVal) labelEl.textContent = labelVal;
+  if (manualVal !== "") set(winsRef, Number(manualVal));
+};
 </script>
 
 </body>
