@@ -6,42 +6,32 @@
 
 <style>
 :root {
-  --bg: #f4f5f7;
-  --panel: #111315;
-  --panel-2: #181b1f;
-  --border: rgba(255,255,255,0.06);
+  --bg: #0b0e12;
+  --bg-2: #10141a;
+  --card: linear-gradient(180deg, #151a21 0%, #0f1318 100%);
+  --border: rgba(255,255,255,0.07);
   --text: #ffffff;
-  --muted: #bfc5cc;
+  --muted: #c8ced6;
   --accent: #00f5d4;
   --input-bg: #f1f3f5;
   --input-text: #111111;
-  --shadow: 0 12px 28px rgba(0,0,0,0.28);
-}
-
-body.dark {
-  --bg: #0c0e11;
-  --panel: #111315;
-  --panel-2: #181b1f;
-  --border: rgba(255,255,255,0.06);
-  --text: #ffffff;
-  --muted: #bfc5cc;
-  --accent: #00f5d4;
-  --input-bg: #f1f3f5;
-  --input-text: #111111;
-  --shadow: 0 14px 30px rgba(0,0,0,0.45);
+  --shadow: 0 10px 28px rgba(0,0,0,0.35);
 }
 
 html, body {
   margin: 0;
   padding: 0;
+  font-family: Arial, sans-serif;
+}
+
+/* LIVE */
+body.live {
   width: fit-content;
   height: fit-content;
   overflow: hidden;
-  font-family: Arial, sans-serif;
-  background: var(--bg);
+  background: transparent;
 }
 
-/* LIVE OVERLAY */
 .overlay {
   display: inline-flex;
   align-items: center;
@@ -52,13 +42,11 @@ html, body {
   font-weight: 800;
   white-space: nowrap;
   border-radius: 12px;
-  background: transparent;
 }
 
-.overlay.live {
-  background: rgba(0,0,0,0.28);
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
+body.live .overlay {
+  background: rgba(0,0,0,0.18);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.9);
 }
 
 #num {
@@ -70,50 +58,68 @@ html, body {
   color: #ff4d4f !important;
 }
 
-/* CONTROL PANEL */
+/* CONTROL */
+body.control {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top left, rgba(0,245,212,0.08), transparent 22%),
+    linear-gradient(180deg, var(--bg-2) 0%, var(--bg) 100%);
+  color: var(--text);
+}
+
+body.control .overlay {
+  position: fixed;
+  top: 18px;
+  left: 18px;
+  z-index: 5;
+  background: rgba(0,0,0,0.22);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.9);
+}
+
 .panel {
   display: none;
-  padding: 24px;
+}
+
+body.control .panel {
+  display: block;
   box-sizing: border-box;
-  min-width: 980px;
-  min-height: 640px;
-  background:
-    radial-gradient(circle at top left, rgba(0,245,212,0.08), transparent 30%),
-    linear-gradient(180deg, #0e1013 0%, #090b0d 100%);
+  width: 100vw;
+  height: 100vh;
+  padding: 82px 18px 18px 18px;
 }
 
-.topbar {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 18px;
-}
-
-.grid {
+.layout {
   display: grid;
-  grid-template-columns: repeat(4, 220px);
-  gap: 16px;
+  grid-template-columns: repeat(4, minmax(170px, 1fr));
+  gap: 14px;
+  width: min(980px, calc(100vw - 36px));
+  max-width: calc(100vw - 36px);
   align-items: start;
 }
 
 .card {
-  background: linear-gradient(180deg, var(--panel-2), var(--panel));
-  color: var(--text);
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: 18px;
   box-shadow: var(--shadow);
-  padding: 16px;
+  padding: 14px;
   box-sizing: border-box;
-  min-height: 220px;
+  min-height: 210px;
 }
 
 .card.wide {
   grid-column: 1 / span 4;
   min-height: auto;
+  padding-bottom: 12px;
 }
 
 .card h3 {
   margin: 0 0 10px;
-  font-size: 18px;
+  font-size: 16px;
   color: var(--accent);
 }
 
@@ -128,7 +134,7 @@ html, body {
 input {
   width: 100%;
   box-sizing: border-box;
-  padding: 12px 12px;
+  padding: 11px 12px;
   border-radius: 12px;
   border: none;
   outline: none;
@@ -146,7 +152,7 @@ button {
   width: 100%;
   border: none;
   border-radius: 12px;
-  padding: 12px;
+  padding: 11px;
   font-weight: 800;
   font-size: 15px;
   cursor: pointer;
@@ -167,8 +173,6 @@ button:active {
 .sub { background: #ff4747; color: #fff; }
 .reset { background: #ffb000; color: #111; }
 .apply { background: #ececec; color: #111; }
-.mode-dark { background: #1c1f24; color: #fff; }
-.mode-light { background: #ececec; color: #111; }
 
 .lock-btn {
   display: flex;
@@ -183,42 +187,55 @@ button:active {
 
 .help-list {
   color: var(--text);
-  font-size: 15px;
-  line-height: 1.7;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.help-line {
+  margin: 0 0 3px;
 }
 
 .help-note {
-  margin-top: 12px;
-  font-size: 13px;
+  margin-top: 10px;
+  font-size: 12px;
   color: var(--muted);
+}
+
+@media (max-width: 980px) {
+  body.control .panel {
+    padding-top: 76px;
+  }
+
+  .layout {
+    grid-template-columns: repeat(2, minmax(170px, 1fr));
+    width: calc(100vw - 36px);
+  }
+
+  .card.wide {
+    grid-column: 1 / span 2;
+  }
 }
 </style>
 </head>
 
-<body class="light">
+<body class="live">
 
-<div class="overlay live">
+<div class="overlay">
   🏆 <span id="num">0</span><span id="max">/10</span> <span id="label">wins</span>
 </div>
 
 <div class="panel" id="panel">
-  <div class="topbar">
-    <div class="card" style="width:220px; min-height:auto;">
+  <div class="layout">
+
+    <div class="card">
       <h3>Bloqueo</h3>
+      <div class="label-soft">Activa o desactiva el control completo</div>
       <button id="lockBtn" class="lock-btn unlocked-style" onclick="toggleLock()">
         <span id="lockIcon">🔓</span>
-        <span id="lockText">Desbloqueado</span>
+        <span id="lockText">Activo</span>
       </button>
     </div>
 
-    <div class="card" style="width:220px; min-height:auto;">
-      <h3>Modo visual</h3>
-      <button class="mode-dark" onclick="setTheme('dark')">Modo oscuro</button>
-      <button class="mode-light" onclick="setTheme('light')">Modo claro</button>
-    </div>
-  </div>
-
-  <div class="grid">
     <div class="card">
       <h3>Valor actual</h3>
       <div class="label-soft">Escribe un número exacto manualmente</div>
@@ -253,23 +270,26 @@ button:active {
 
     <div class="card wide">
       <h3>Guía de controles</h3>
+
       <div class="help-list">
-        <div>⬆️ or = or + → suma +1</div>
-        <div>⬇️ or - → resta -1</div>
-        <div>0 → resetea el valor actual a 0</div>
-        <div>Home → bloquea / desbloquea el control</div>
-        <div>🔒 / 🔓 → hace lo mismo que Home</div>
-        <div>Meta final → cambia el número después de la barra</div>
-        <div>Texto → cambia la palabra final</div>
-        <div>Valor actual → escribe un número exacto manualmente</div>
-        <div>reset de Meta final → vuelve a 10</div>
-        <div>reset de Texto → vuelve a wins</div>
-        <div>reset de Valor actual → vuelve a 0</div>
+        <div class="help-line">⬆️ or = or + → suma +1</div>
+        <div class="help-line">⬇️ or - → resta -1</div>
+        <div class="help-line">0 → resetea el valor actual a 0</div>
+        <div class="help-line">Home → bloquea / desbloquea el control</div>
+        <div class="help-line">🔒 / 🔓 → hace lo mismo que Home</div>
+        <div class="help-line">Meta final → cambia el número después de la barra</div>
+        <div class="help-line">Texto → cambia la palabra final</div>
+        <div class="help-line">Valor actual → escribe un número exacto manualmente</div>
+        <div class="help-line">reset de Meta final → vuelve a 10</div>
+        <div class="help-line">reset de Texto → vuelve a wins</div>
+        <div class="help-line">reset de Valor actual → vuelve a 0</div>
       </div>
+
       <div class="help-note">
         Cuando el control está bloqueado, ni las teclas ni los botones cambian nada.
       </div>
     </div>
+
   </div>
 </div>
 
@@ -307,15 +327,14 @@ const manualInput = document.getElementById("manualInput");
 const lockBtn = document.getElementById("lockBtn");
 const lockIcon = document.getElementById("lockIcon");
 const lockText = document.getElementById("lockText");
-const bodyEl = document.body;
-const overlayEl = document.querySelector(".overlay");
 
 const params = new URLSearchParams(location.search);
 const isControl = params.get("view") === "control";
 
 if (isControl) {
-  document.getElementById("panel").style.display = "block";
-  overlayEl.classList.remove("live");
+  document.body.className = "control";
+} else {
+  document.body.className = "live";
 }
 
 function updateLockUI() {
@@ -335,16 +354,11 @@ function updateLockUI() {
     lockBtn.classList.add("locked-style");
   } else {
     lockIcon.textContent = "🔓";
-    lockText.textContent = "Desbloqueado";
+    lockText.textContent = "Activo";
     lockBtn.classList.remove("locked-style");
     lockBtn.classList.add("unlocked-style");
   }
 }
-
-window.setTheme = (mode) => {
-  bodyEl.classList.remove("light", "dark");
-  bodyEl.classList.add(mode === "dark" ? "dark" : "light");
-};
 
 // sync wins
 onValue(winsRef, s => {
