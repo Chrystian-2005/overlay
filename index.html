@@ -1,250 +1,677 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Overlay PRO</title>
+  <meta charset="UTF-8" />
+  <title>Overlay</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Montserrat:wght@700&family=Oswald:wght@600&family=Poppins:wght@600&family=Roboto:wght@700&display=swap" rel="stylesheet">
+  <!-- Fontes para o overlay -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Montserrat:wght@600;700;800&family=Oswald:wght@500;700&family=Poppins:wght@400;600;700;800&family=Roboto:wght@400;500;700;900&display=swap"
+    rel="stylesheet"
+  />
 
-<style>
-:root{
---overlay-font: Arial;
---color-all:#ffffff;
---color-num:#ffffff;
---color-max:#ffffff;
---color-label:#ffffff;
---color-icon:#ffffff;
---color-negative:#ff4d4f;
---bg-color:#000000;
---bg-alpha:0;
-}
+  <style>
+    :root {
+      --bg1: #091019;
+      --bg2: #04070b;
+      --card1: #161c25;
+      --card2: #0f141b;
+      --line: rgba(255, 255, 255, 0.08);
+      --txt: #fff;
+      --muted: #c7ced8;
+      --acc: #00f5d4;
+      --inbg: #f2f3f5;
+      --intxt: #111;
+      --sh: 0 14px 30px rgba(0, 0, 0, 0.45);
 
-body{margin:0;font-family:Arial}
-body.live{background:transparent}
-body.control{background:#0b0f14;color:#fff}
+      /* fonte só do overlay */
+      --overlay-font: Arial, sans-serif;
+    }
 
-.overlay{
-display:inline-flex;
-gap:4px;
-font-weight:800;
-font-size:34px;
-font-family:var(--overlay-font);
-padding:6px 12px;
-border-radius:12px;
-}
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
 
-body.live .overlay{
-background:rgba(0,0,0,var(--bg-alpha));
-}
+    body.live {
+      width: fit-content;
+      height: fit-content;
+      overflow: hidden;
+      background: transparent;
+    }
 
-#icon{color:var(--color-icon)}
-#num{color:var(--color-num)}
-#maxnum{color:var(--color-max)}
-#label{color:var(--color-label)}
+    body.control {
+      width: 100vw;
+      min-height: 100vh;
+      overflow: auto;
+      background:
+        radial-gradient(circle at top center, rgba(0, 245, 212, 0.08), transparent 22%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      color: var(--txt);
+    }
 
-.negativo{
-color:var(--color-negative)!important;
-}
+    /* OVERLAY */
+    .overlay {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      color: #fff;
+      font-weight: 800;
+      white-space: nowrap;
+      font-family: var(--overlay-font);
+    }
 
-.panel{display:none}
-body.control .panel{display:block;padding:20px}
+    body.live .overlay {
+      padding: 6px 12px;
+      border-radius: 14px;
+      background: linear-gradient(
+        90deg,
+        rgba(0, 245, 212, 0.22),
+        rgba(0, 245, 212, 0.08) 38%,
+        rgba(0, 0, 0, 0.12) 100%
+      );
 
-.card{
-background:#111;
-padding:15px;
-border-radius:12px;
-width:220px;
-margin:10px;
-display:inline-block;
-vertical-align:top;
-}
+      /* sem blur */
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
 
-input,select{
-width:100%;
-margin:5px 0;
-padding:6px;
-border-radius:6px;
-border:none;
-}
+      /* sem sombra borrada */
+      text-shadow: none;
 
-button{
-width:100%;
-padding:6px;
-margin-top:5px;
-cursor:pointer;
-border:none;
-border-radius:6px;
-font-weight:700;
-}
+      font-size: 34px;
+    }
 
-</style>
+    body.control .overlay-wrap {
+      display: flex;
+      justify-content: center;
+      padding-top: 18px;
+    }
+
+    body.control .overlay {
+      padding: 8px 18px;
+      border-radius: 16px;
+      background: linear-gradient(
+        90deg,
+        rgba(0, 245, 212, 0.22),
+        rgba(0, 245, 212, 0.08) 38%,
+        rgba(0, 0, 0, 0.12) 100%
+      );
+
+      /* sem blur */
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+
+      /* sem sombra borrada */
+      text-shadow: none;
+
+      font-size: 34px;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+    }
+
+    #num {
+      min-width: 24px;
+      text-align: center;
+    }
+
+    .negativo {
+      color: #ff4d4f !important;
+    }
+
+    .edit {
+      border-radius: 8px;
+      padding: 1px 4px;
+      cursor: text;
+    }
+
+    .edit:focus {
+      outline: 1px solid rgba(0, 245, 212, 0.45);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    /* PAINEL */
+    .panel {
+      display: none;
+    }
+
+    body.control .panel {
+      display: block;
+      padding: 16px 18px 24px;
+    }
+
+    .stack {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+    }
+
+    .row4 {
+      display: grid;
+      grid-template-columns: repeat(5, 220px);
+      gap: 16px;
+      justify-content: center;
+    }
+
+    .single {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .card {
+      width: 220px;
+      min-height: 220px;
+      box-sizing: border-box;
+      background: linear-gradient(180deg, var(--card1), var(--card2));
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: var(--sh);
+      padding: 14px;
+      color: var(--txt);
+    }
+
+    .guide {
+      width: 1188px;
+      min-height: auto;
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 16px;
+      color: var(--acc);
+    }
+
+    .soft {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+      min-height: 36px;
+      margin-bottom: 10px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 11px 12px;
+      border-radius: 12px;
+      border: none;
+      outline: none;
+      background: var(--inbg);
+      color: var(--intxt);
+      font-size: 15px;
+      margin-bottom: 10px;
+    }
+
+    input::placeholder {
+      color: rgba(0, 0, 0, 0.42);
+    }
+
+    button {
+      width: 100%;
+      border: none;
+      border-radius: 12px;
+      padding: 11px;
+      font-weight: 800;
+      font-size: 15px;
+      cursor: pointer;
+      margin-bottom: 10px;
+      transition: transform 0.12s ease, filter 0.12s ease, opacity 0.12s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.03);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .add {
+      background: #19e6c8;
+      color: #07100e;
+    }
+
+    .sub {
+      background: #ff4747;
+      color: #fff;
+    }
+
+    .reset {
+      background: #ffb000;
+      color: #111;
+    }
+
+    .apply {
+      background: #ececec;
+      color: #111;
+    }
+
+    .lock-btn {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      color: #fff;
+    }
+
+    .locked-style {
+      background: #612222 !important;
+    }
+
+    .unlocked-style {
+      background: #1e4f39 !important;
+    }
+
+    .help {
+      font-size: 14px;
+      line-height: 1.58;
+      color: var(--txt);
+    }
+
+    .help div {
+      margin: 0 0 3px;
+    }
+
+    .note {
+      margin-top: 10px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 1300px) {
+      .row4 {
+        grid-template-columns: repeat(3, 220px);
+      }
+
+      .guide {
+        width: 692px;
+      }
+    }
+
+    @media (max-width: 1000px) {
+      .row4 {
+        grid-template-columns: repeat(2, 220px);
+      }
+
+      .guide {
+        width: 456px;
+      }
+    }
+  </style>
 </head>
 
 <body class="live">
+  <div class="overlay-wrap">
+    <div class="overlay">
+      🏆
+      <span id="num" class="edit">0</span>
+      <span>/</span>
+      <span id="maxnum" class="edit">10</span>
+      <span id="label" class="edit">wins</span>
+    </div>
+  </div>
 
-<div class="overlay">
-<span id="icon">🏆</span>
-<span id="num">0</span>
-<span>/</span>
-<span id="maxnum">10</span>
-<span id="label">wins</span>
-</div>
+  <div class="panel" id="panel">
+    <div class="stack">
+      <div class="single">
+        <div class="card">
+          <h3>Bloqueo</h3>
+          <div class="soft">Activa o desactiva el control completo</div>
+          <button id="lockBtn" class="lock-btn unlocked-style" onclick="toggleLock()">
+            <span id="lockIcon">🔓</span>
+            <span id="lockText">Activo</span>
+          </button>
+        </div>
+      </div>
 
-<div class="panel">
+      <div class="row4">
+        <div class="card">
+          <h3>Valor actual</h3>
+          <div class="soft">Escribe un número exacto manualmente</div>
+          <input id="manualInput" placeholder="Ex: 0" />
+          <button class="apply action-btn" onclick="setValue()">Aplicar</button>
+          <button class="reset action-btn" onclick="resetValue()">reset</button>
+        </div>
 
-<div class="card">
-<h3>Cores</h3>
+        <div class="card">
+          <h3>Meta final</h3>
+          <div class="soft">Cambia el número después de la barra</div>
+          <input id="maxInput" placeholder="Ex: 10" />
+          <button class="apply action-btn" onclick="setMax()">Aplicar</button>
+          <button class="reset action-btn" onclick="resetMax()">reset</button>
+        </div>
 
-<label>Aplicar para todos</label>
-<input type="checkbox" id="allToggle">
+        <div class="card">
+          <h3>Texto</h3>
+          <div class="soft">Cambia la palabra final</div>
+          <input id="labelInput" placeholder="Ex: wins" />
+          <button class="apply action-btn" onclick="setLabel()">Aplicar</button>
+          <button class="reset action-btn" onclick="resetLabel()">reset</button>
+        </div>
 
-<input type="color" id="allColor">
+        <div class="card">
+          <h3>Fuente</h3>
+          <div class="soft">Cambia solo la fuente del overlay</div>
+          <select id="fontSelect">
+            <option value="Arial, sans-serif">Arial</option>
+            <option value="'Segoe UI', sans-serif">Segoe UI</option>
+            <option value="Inter, sans-serif">Inter</option>
+            <option value="Roboto, sans-serif">Roboto</option>
+            <option value="Poppins, sans-serif">Poppins</option>
+            <option value="Montserrat, sans-serif">Montserrat</option>
+            <option value="Verdana, sans-serif">Verdana</option>
+            <option value="Tahoma, sans-serif">Tahoma</option>
+            <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+            <option value="Georgia, serif">Georgia</option>
+            <option value="'Times New Roman', serif">Times New Roman</option>
+            <option value="'Courier New', monospace">Courier New</option>
+            <option value="Oswald, sans-serif">Oswald</option>
+            <option value="Impact, sans-serif">Impact</option>
+          </select>
+          <button class="apply action-btn" onclick="setFont()">Aplicar</button>
+          <button class="reset action-btn" onclick="resetFont()">reset</button>
+        </div>
 
-<label>Número</label>
-<input type="color" id="numColor">
+        <div class="card">
+          <h3>Control rápido</h3>
+          <div class="soft">Ajuste inmediato del contador</div>
+          <button class="add action-btn" onclick="add()">+1</button>
+          <button class="sub action-btn" onclick="sub()">-1</button>
+          <button class="reset action-btn" onclick="resetWins()">reset</button>
+        </div>
+      </div>
 
-<label>Meta</label>
-<input type="color" id="maxColor">
+      <div class="single">
+        <div class="card guide">
+          <h3>Guía de controles</h3>
+          <div class="help">
+            <div>⬆️ or = or + → suma +1</div>
+            <div>⬇️ or - → resta -1</div>
+            <div>0 → resetea el valor actual a 0</div>
+            <div>Home → bloquea / desbloquea el control</div>
+            <div>🔒 / 🔓 → hace lo mismo que Home</div>
+            <div>Meta final → cambia el número después de la barra</div>
+            <div>Texto → cambia la palabra final</div>
+            <div>Valor actual → escribe un número exacto manualmente</div>
+            <div>Fuente → cambia solo la tipografía del overlay</div>
+            <div>reset de Meta final → vuelve a 10</div>
+            <div>reset de Texto → vuelve a wins</div>
+            <div>reset de Valor actual → vuelve a 0</div>
+          </div>
+          <div class="note">
+            Cuando el control está bloqueado, ni las teclas ni los botones cambian nada.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<label>Texto</label>
-<input type="color" id="labelColor">
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+    import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 
-<label>Ícone</label>
-<input type="color" id="iconColor">
+    const firebaseConfig = {
+      apiKey: "AIzaSyDAcg0UGMQ-iJbk_E8FSNLRipx2MvcJj4",
+      authDomain: "wins-mine.firebaseapp.com",
+      databaseURL: "https://wins-mine-default-rtdb.firebaseio.com/",
+      projectId: "wins-mine",
+      storageBucket: "wins-mine.firebasestorage.app",
+      messagingSenderId: "328422738631",
+      appId: "1:328422738631:web:dd115c799f82f5cb7e0ce2"
+    };
 
-<label>Negativo</label>
-<input type="color" id="negColor">
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
 
-</div>
+    const winsRef = ref(db, "overlay/wins");
+    const maxRef = ref(db, "overlay/max");
+    const labelRef = ref(db, "overlay/label");
+    const lockedRef = ref(db, "overlay/locked");
+    const fontRef = ref(db, "overlay/font");
 
-<div class="card">
-<h3>Fundo</h3>
+    let wins = 0;
+    let locked = false;
 
-<input type="color" id="bgColor">
-<input type="range" id="bgAlpha" min="0" max="1" step="0.01">
+    const params = new URLSearchParams(location.search);
+    const isControl = params.get("view") === "control";
 
-</div>
+    const num = document.getElementById("num");
+    const maxnum = document.getElementById("maxnum");
+    const label = document.getElementById("label");
 
-<div class="card">
-<h3>Fonte</h3>
+    const maxInput = document.getElementById("maxInput");
+    const labelInput = document.getElementById("labelInput");
+    const manualInput = document.getElementById("manualInput");
+    const fontSelect = document.getElementById("fontSelect");
 
-<select id="font">
-<option>Arial</option>
-<option>Inter</option>
-<option>Montserrat</option>
-<option>Oswald</option>
-<option>Poppins</option>
-<option>Roboto</option>
-</select>
+    const lockBtn = document.getElementById("lockBtn");
+    const lockIcon = document.getElementById("lockIcon");
+    const lockText = document.getElementById("lockText");
 
-</div>
+    document.body.className = isControl ? "control" : "live";
 
-</div>
+    function applyOverlayFont(fontValue) {
+      document.documentElement.style.setProperty(
+        "--overlay-font",
+        fontValue || "Arial, sans-serif"
+      );
+    }
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+    function updateLockUI() {
+      if (!lockBtn) return;
 
-const app=initializeApp({
-databaseURL:"https://wins-mine-default-rtdb.firebaseio.com/"
-});
+      const actionButtons = document.querySelectorAll(".action-btn");
 
-const db=getDatabase(app);
+      actionButtons.forEach((button) => {
+        button.disabled = locked;
+        button.style.opacity = locked ? ".55" : "1";
+        button.style.pointerEvents = locked ? "none" : "auto";
+      });
 
-const refs={
-wins:ref(db,"wins"),
-colors:ref(db,"colors")
-};
+      if (locked) {
+        lockIcon.textContent = "🔒";
+        lockText.textContent = "Bloqueado";
+        lockBtn.classList.remove("unlocked-style");
+        lockBtn.classList.add("locked-style");
+      } else {
+        lockIcon.textContent = "🔓";
+        lockText.textContent = "Activo";
+        lockBtn.classList.remove("locked-style");
+        lockBtn.classList.add("unlocked-style");
+      }
+    }
 
-let wins=0;
+    onValue(winsRef, (snapshot) => {
+      wins = snapshot.val() ?? 0;
+      num.textContent = wins;
 
-const params=new URLSearchParams(location.search);
-const control=params.get("view")==="control";
-document.body.className=control?"control":"live";
+      if (wins < 0) {
+        num.classList.add("negativo");
+      } else {
+        num.classList.remove("negativo");
+      }
+    });
 
-const el={
-num:document.getElementById("num"),
-max:document.getElementById("maxnum"),
-label:document.getElementById("label"),
-icon:document.getElementById("icon"),
+    onValue(maxRef, (snapshot) => {
+      maxnum.textContent = snapshot.val() ?? 10;
+    });
 
-allToggle:document.getElementById("allToggle"),
-allColor:document.getElementById("allColor"),
+    onValue(labelRef, (snapshot) => {
+      label.textContent = snapshot.val() ?? "wins";
+    });
 
-numColor:document.getElementById("numColor"),
-maxColor:document.getElementById("maxColor"),
-labelColor:document.getElementById("labelColor"),
-iconColor:document.getElementById("iconColor"),
-negColor:document.getElementById("negColor"),
+    onValue(lockedRef, (snapshot) => {
+      locked = snapshot.val() ?? false;
+      updateLockUI();
+    });
 
-bgColor:document.getElementById("bgColor"),
-bgAlpha:document.getElementById("bgAlpha"),
+    onValue(fontRef, (snapshot) => {
+      const savedFont = snapshot.val() ?? "Arial, sans-serif";
+      applyOverlayFont(savedFont);
 
-font:document.getElementById("font")
-};
+      if (fontSelect && fontSelect.value !== savedFont) {
+        fontSelect.value = savedFont;
+      }
+    });
 
-function apply(c){
+    if (isControl) {
+      num.contentEditable = "true";
+      maxnum.contentEditable = "true";
+      label.contentEditable = "true";
 
-if(c.all){
-document.documentElement.style.setProperty("--color-num",c.allColor);
-document.documentElement.style.setProperty("--color-max",c.allColor);
-document.documentElement.style.setProperty("--color-label",c.allColor);
-document.documentElement.style.setProperty("--color-icon",c.allColor);
-}else{
-document.documentElement.style.setProperty("--color-num",c.num);
-document.documentElement.style.setProperty("--color-max",c.max);
-document.documentElement.style.setProperty("--color-label",c.label);
-document.documentElement.style.setProperty("--color-icon",c.icon);
-}
+      num.spellcheck = false;
+      maxnum.spellcheck = false;
+      label.spellcheck = false;
 
-document.documentElement.style.setProperty("--color-negative",c.neg);
-document.documentElement.style.setProperty("--bg-color",c.bg);
-document.documentElement.style.setProperty("--bg-alpha",c.alpha);
-document.documentElement.style.setProperty("--overlay-font",c.font);
-}
+      [num, maxnum, label].forEach((element) => {
+        element.addEventListener("keydown", (event) => {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            element.blur();
+          }
+        });
+      });
 
-onValue(refs.wins,s=>{
-wins=s.val()||0;
-el.num.textContent=wins;
-el.num.classList.toggle("negativo",wins<0);
-});
+      num.addEventListener("blur", async () => {
+        if (locked) return;
 
-onValue(refs.colors,s=>{
-const c=s.val()||{};
-apply(c);
-});
+        const value = parseInt(num.textContent.trim(), 10);
+        if (!isNaN(value)) {
+          await set(winsRef, value);
+        }
+      });
 
-if(control){
+      maxnum.addEventListener("blur", async () => {
+        if (locked) return;
 
-function save(){
-const data={
-all:el.allToggle.checked,
-allColor:el.allColor.value,
-num:el.numColor.value,
-max:el.maxColor.value,
-label:el.labelColor.value,
-icon:el.iconColor.value,
-neg:el.negColor.value,
-bg:el.bgColor.value,
-alpha:el.bgAlpha.value,
-font:el.font.value
-};
-set(refs.colors,data);
-}
+        const value = parseInt(maxnum.textContent.trim(), 10);
+        if (!isNaN(value)) {
+          await set(maxRef, value);
+        }
+      });
 
-document.querySelectorAll("input,select").forEach(e=>{
-e.oninput=save;
-});
+      label.addEventListener("blur", async () => {
+        if (locked) return;
 
-document.addEventListener("keydown",e=>{
-if(e.key==="ArrowUp"||e.key==="+"||e.key==="=")set(refs.wins,wins+1);
-if(e.key==="ArrowDown"||e.key==="-")set(refs.wins,wins-1);
-if(e.key==="0")set(refs.wins,0);
-});
+        const value = label.textContent.trim();
+        if (value) {
+          await set(labelRef, value);
+        }
+      });
 
-}
+      document.addEventListener("keydown", async (event) => {
+        if (event.key === "Home") {
+          await set(lockedRef, !locked);
+          return;
+        }
 
-</script>
+        if (locked) return;
 
+        if (["ArrowUp", "=", "+"].includes(event.key)) {
+          await set(winsRef, wins + 1);
+          return;
+        }
+
+        if (["ArrowDown", "-"].includes(event.key)) {
+          await set(winsRef, wins - 1);
+          return;
+        }
+
+        if (event.key === "0") {
+          await set(winsRef, 0);
+        }
+      });
+    }
+
+    window.toggleLock = async () => {
+      await set(lockedRef, !locked);
+    };
+
+    window.add = async () => {
+      if (locked) return;
+      await set(winsRef, wins + 1);
+    };
+
+    window.sub = async () => {
+      if (locked) return;
+      await set(winsRef, wins - 1);
+    };
+
+    window.resetWins = async () => {
+      if (locked) return;
+      await set(winsRef, 0);
+    };
+
+    window.setMax = async () => {
+      if (locked) return;
+
+      const value = maxInput.value.trim();
+      if (value !== "") {
+        await set(maxRef, Number(value));
+      }
+    };
+
+    window.resetMax = async () => {
+      if (locked) return;
+
+      await set(maxRef, 10);
+      maxInput.value = "";
+    };
+
+    window.setLabel = async () => {
+      if (locked) return;
+
+      const value = labelInput.value.trim();
+      if (value !== "") {
+        await set(labelRef, value);
+      }
+    };
+
+    window.resetLabel = async () => {
+      if (locked) return;
+
+      await set(labelRef, "wins");
+      labelInput.value = "";
+    };
+
+    window.setValue = async () => {
+      if (locked) return;
+
+      const value = manualInput.value.trim();
+      if (value !== "") {
+        await set(winsRef, Number(value));
+      }
+    };
+
+    window.resetValue = async () => {
+      if (locked) return;
+
+      await set(winsRef, 0);
+      manualInput.value = "";
+    };
+
+    window.setFont = async () => {
+      if (locked) return;
+
+      const value = fontSelect.value.trim();
+      if (value) {
+        await set(fontRef, value);
+      }
+    };
+
+    window.resetFont = async () => {
+      if (locked) return;
+
+      await set(fontRef, "Arial, sans-serif");
+      fontSelect.value = "Arial, sans-serif";
+    };
+  </script>
 </body>
 </html>
