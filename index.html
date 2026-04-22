@@ -10,20 +10,19 @@ html, body {
   padding: 0;
   background: transparent;
   overflow: hidden;
+  width: max-content;
+  height: max-content;
+  font-family: Arial, sans-serif;
 }
 
-/* 🔥 overlay */
+/* 🔥 overlay pequeno */
 .overlay {
-  position: absolute;
-  top: 40px;
-  left: 40px;
-
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 4px;
 
-  font-size: 40px;
-  font-weight: 700;
+  font-size: 36px;
+  font-weight: bold;
   color: white;
 
   text-shadow: 0 0 10px black, 0 0 20px black;
@@ -31,48 +30,42 @@ html, body {
   white-space: nowrap;
 }
 
-#num {
-  min-width: 30px;
-  text-align: center;
-}
-
-.negativo {
-  color: #ff3b3b;
-}
-
-/* 🎮 painel bonito */
+/* painel */
 .panel {
   position: fixed;
   bottom: 20px;
   left: 20px;
-  width: 220px;
 
-  background: rgba(15,15,15,0.95);
-  border-radius: 12px;
+  width: 240px;
   padding: 15px;
 
-  color: white;
-  font-family: Arial;
+  background: #1c1c1c;
+  border-radius: 12px;
 
   display: none;
-
-  box-shadow: 0 0 20px #00ffcc33;
+  color: white;
 }
 
-.panel h2 {
-  margin: 0 0 10px;
-  text-align: center;
+/* caixas separadas */
+.card {
+  background: #2a2a2a;
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.card h3 {
+  margin: 0 0 8px;
   color: #00ffcc;
+  font-size: 14px;
 }
 
-.panel button {
+button {
   width: 100%;
-  margin: 5px 0;
-  padding: 8px;
-
+  margin-top: 5px;
+  padding: 6px;
   border: none;
   border-radius: 6px;
-
   font-weight: bold;
   cursor: pointer;
 }
@@ -81,10 +74,10 @@ html, body {
 .sub { background: #ff3b3b; }
 .reset { background: orange; color: black; }
 
-.panel input {
+input {
   width: 100%;
-  margin: 5px 0;
-  padding: 5px;
+  margin-top: 5px;
+  padding: 4px;
 }
 </style>
 </head>
@@ -96,32 +89,35 @@ html, body {
 </div>
 
 <div class="panel" id="panel">
-  <h2>CONTROL</h2>
 
-  <button class="add" onclick="add()">+1</button>
-  <button class="sub" onclick="sub()">-1</button>
-  <button class="reset" onclick="reset()">Reset</button>
+  <div class="card">
+    <h3>CONTROL</h3>
+    <button class="add" onclick="add()">+1</button>
+    <button class="sub" onclick="sub()">-1</button>
+    <button class="reset" onclick="resetWins()">reset</button>
+  </div>
 
-  <hr>
+  <div class="card">
+    <h3>Meta final</h3>
+    <input id="maxInput">
+    <button onclick="setMax()">Aplicar</button>
+    <button class="reset" onclick="resetMax()">reset</button>
+  </div>
 
-  Meta:
-  <input id="maxInput" type="number" placeholder="Ex: 10">
+  <div class="card">
+    <h3>Texto</h3>
+    <input id="labelInput">
+    <button onclick="setLabel()">Aplicar</button>
+    <button class="reset" onclick="resetLabel()">reset</button>
+  </div>
 
-  Texto:
-  <input id="labelInput" type="text" placeholder="Ex: wins">
+  <div class="card">
+    <h3>Valor actual</h3>
+    <input id="manualInput">
+    <button onclick="setValue()">Aplicar</button>
+    <button class="reset" onclick="resetValue()">reset</button>
+  </div>
 
-  Valor:
-  <input id="manualInput" type="number" placeholder="Ex: 5">
-
-  <button onclick="apply()">Aplicar</button>
-
-  <hr>
-
-  <small>
-  ↑ ↓ + - = → alterar<br>
-  0 → reset<br>
-  HOME → lock
-  </small>
 </div>
 
 <script type="module">
@@ -146,23 +142,23 @@ const maxRef = ref(db, "overlay/max");
 const labelRef = ref(db, "overlay/label");
 
 let wins = 0;
-let locked = false;
 
 const num = document.getElementById("num");
 const maxEl = document.getElementById("max");
 const labelEl = document.getElementById("label");
 
-// mostrar painel só no control
+// mostrar panel solo en control
 const params = new URLSearchParams(location.search);
-if (params.get("view") === "control") {
+const isControl = params.get("view") === "control";
+
+if (isControl) {
   document.getElementById("panel").style.display = "block";
 }
 
-// 🔥 sincronização
+// 🔥 sync
 onValue(winsRef, s => {
   wins = s.val() ?? 0;
   num.textContent = wins;
-  num.classList.toggle("negativo", wins < 0);
 });
 
 onValue(maxRef, s => {
@@ -173,41 +169,33 @@ onValue(labelRef, s => {
   labelEl.textContent = s.val() ?? "wins";
 });
 
-// teclado
-document.addEventListener("keydown", async (e) => {
+// 🚫 teclado só no control
+if (isControl) {
+  document.addEventListener("keydown", async (e) => {
 
-  if (e.key === "Home") {
-    locked = !locked;
-    return;
-  }
+    if (["ArrowUp","=","+"].includes(e.key))
+      await set(winsRef, wins + 1);
 
-  if (locked) return;
+    if (["ArrowDown","-"].includes(e.key))
+      await set(winsRef, wins - 1);
 
-  if (["ArrowUp","=","+"].includes(e.key))
-    await set(winsRef, wins + 1);
-
-  if (["ArrowDown","-"].includes(e.key))
-    await set(winsRef, wins - 1);
-
-  if (e.key === "0")
-    await set(winsRef, 0);
-});
+    if (e.key === "0")
+      await set(winsRef, 0);
+  });
+}
 
 // botões
 window.add = () => set(winsRef, wins + 1);
 window.sub = () => set(winsRef, wins - 1);
-window.reset = () => set(winsRef, 0);
 
-// aplicar alterações
-window.apply = async () => {
-  const m = maxInput.value;
-  const l = labelInput.value;
-  const v = manualInput.value;
+window.resetWins = () => set(winsRef, 0);
+window.resetMax = () => set(maxRef, 10);
+window.resetLabel = () => set(labelRef, "wins");
+window.resetValue = () => set(winsRef, 0);
 
-  if (m) await set(maxRef, Number(m));
-  if (l) await set(labelRef, l);
-  if (v !== "") await set(winsRef, Number(v));
-};
+window.setMax = () => set(maxRef, Number(maxInput.value));
+window.setLabel = () => set(labelRef, labelInput.value);
+window.setValue = () => set(winsRef, Number(manualInput.value));
 </script>
 
 </body>
