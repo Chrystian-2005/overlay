@@ -1,1 +1,677 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Overlay</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Montserrat:wght@600;700;800&family=Oswald:wght@500;700&family=Poppins:wght@400;600;700;800&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet"><style>:root{--bg1:#091019;--bg2:#04070b;--card1:#161c25;--card2:#0f141b;--line:rgba(255,255,255,.08);--txt:#fff;--muted:#c7ced8;--acc:#00f5d4;--inbg:#f2f3f5;--intxt:#111;--sh:0 14px 30px rgba(0,0,0,.45);--font:'Arial',sans-serif}html,body{margin:0;padding:0;font-family:var(--font)}body.live{width:fit-content;height:fit-content;overflow:hidden;background:transparent}body.control{width:100vw;min-height:100vh;overflow:auto;background:radial-gradient(circle at top center,rgba(0,245,212,.08),transparent 22%),linear-gradient(180deg,var(--bg1),var(--bg2));color:var(--txt)}.overlay{display:inline-flex;align-items:center;gap:2px;color:#fff;font-weight:800;white-space:nowrap;opacity:0;transition:opacity .12s ease;font-family:var(--font)}.overlay.ready{opacity:1}body.live .overlay{padding:6px 12px;border-radius:14px;background:linear-gradient(90deg,rgba(0,245,212,.22),rgba(0,245,212,.08) 38%,rgba(0,0,0,.12) 100%);text-shadow:0 1px 0 rgba(0,0,0,.45);font-size:34px}body.control .overlay-wrap{display:flex;justify-content:center;padding-top:18px}body.control .overlay{padding:8px 18px;border-radius:16px;background:linear-gradient(90deg,rgba(0,245,212,.22),rgba(0,245,212,.08) 38%,rgba(0,0,0,.12) 100%);text-shadow:0 1px 0 rgba(0,0,0,.45);font-size:34px;box-shadow:0 10px 24px rgba(0,0,0,.25)}#num{min-width:24px;text-align:center}.negativo{color:#ff4d4f!important}.edit{border-radius:8px;padding:1px 4px;cursor:text}.edit:focus{outline:1px solid rgba(0,245,212,.45);background:rgba(255,255,255,.06)}.panel{display:none}body.control .panel{display:block;padding:16px 18px 24px}.layout{display:grid;grid-template-columns:repeat(5,220px);gap:16px;justify-content:center;align-items:start}.card{width:220px;box-sizing:border-box;background:linear-gradient(180deg,var(--card1),var(--card2));border:1px solid var(--line);border-radius:18px;box-shadow:var(--sh);padding:14px;color:var(--txt);min-height:230px}.card.wide{grid-column:1 / span 5;width:auto;min-height:auto}.card h3{margin:0 0 10px;font-size:16px;color:var(--acc)}.soft{color:var(--muted);font-size:13px;line-height:1.35;min-height:36px;margin-bottom:10px}input,select{width:100%;box-sizing:border-box;padding:11px 12px;border-radius:12px;border:none;outline:none;background:var(--inbg);color:var(--intxt);font-size:15px;margin-bottom:10px}input::placeholder{color:rgba(0,0,0,.42)}button{width:100%;border:none;border-radius:12px;padding:11px;font-weight:800;font-size:15px;cursor:pointer;margin-bottom:10px;transition:transform .12s ease,filter .12s ease,opacity .12s ease}button:hover{transform:translateY(-1px);filter:brightness(1.03)}button:active{transform:translateY(0)}.add{background:#19e6c8;color:#07100e}.sub{background:#ff4747;color:#fff}.reset{background:#ffb000;color:#111}.apply{background:#ececec;color:#111}.lock-btn{display:flex;justify-content:center;align-items:center;gap:8px;color:#fff}.locked-style{background:#612222!important}.unlocked-style{background:#1e4f39!important}.help{font-size:14px;line-height:1.58;color:var(--txt)}.help div{margin:0 0 3px}.note{margin-top:10px;font-size:12px;color:var(--muted)}.loading{display:none}body.control .loading{display:flex;justify-content:center;align-items:center;height:100vh;color:#fff;font-size:18px}body.control .ready .loading{display:none}body.control .ready .panel,body.control .ready .overlay{display:block}.disabled{opacity:.55;pointer-events:none}@media (max-width:1200px){.layout{grid-template-columns:repeat(3,220px)}.card.wide{grid-column:1 / span 3}}@media (max-width:760px){.layout{grid-template-columns:repeat(2,220px)}.card.wide{grid-column:1 / span 2}}</style></head><body class="live"><div class="loading" id="loading">Cargando...</div><div class="overlay-wrap"><div class="overlay" id="overlay">🏆 <span id="num" class="edit">0</span><span>/</span><span id="maxnum" class="edit">10</span> <span id="label" class="edit">wins</span></div></div><div class="panel" id="panel"><div class="layout"><div class="card"><h3>Bloqueo</h3><div class="soft">Activa o desactiva el control completo</div><button id="lockBtn" class="lock-btn unlocked-style" onclick="toggleLock()"><span id="lockIcon">🔓</span><span id="lockText">Activo</span></button></div><div class="card"><h3>Valor actual</h3><div class="soft">Escribe un número exacto manualmente</div><input id="manualInput" placeholder="Ex: 0"><button class="apply action-btn" onclick="setValue()">Aplicar</button><button class="reset action-btn" onclick="resetValue()">reset</button></div><div class="card"><h3>Meta final</h3><div class="soft">Cambia el número después de la barra</div><input id="maxInput" placeholder="Ex: 10"><button class="apply action-btn" onclick="setMax()">Aplicar</button><button class="reset action-btn" onclick="resetMax()">reset</button></div><div class="card"><h3>Texto</h3><div class="soft">Cambia la palabra final</div><input id="labelInput" placeholder="Ex: wins"><button class="apply action-btn" onclick="setLabel()">Aplicar</button><button class="reset action-btn" onclick="resetLabel()">reset</button></div><div class="card"><h3>Fuente</h3><div class="soft">Cambia la tipografía del overlay</div><select id="fontSelect"><option value="Arial, sans-serif">Arial</option><option value="'Segoe UI', sans-serif">Segoe UI</option><option value="Inter, sans-serif">Inter</option><option value="Roboto, sans-serif">Roboto</option><option value="Poppins, sans-serif">Poppins</option><option value="Montserrat, sans-serif">Montserrat</option><option value="Verdana, sans-serif">Verdana</option><option value="Tahoma, sans-serif">Tahoma</option><option value="'Trebuchet MS', sans-serif">Trebuchet MS</option><option value="Georgia, serif">Georgia</option><option value="'Times New Roman', serif">Times New Roman</option><option value="'Courier New', monospace">Courier New</option><option value="Oswald, sans-serif">Oswald</option><option value="Impact, sans-serif">Impact</option></select><button class="apply action-btn" onclick="setFont()">Aplicar</button><button class="reset action-btn" onclick="resetFont()">reset</button></div><div class="card"><h3>Control rápido</h3><div class="soft">Ajuste inmediato del contador</div><button class="add action-btn" onclick="add()">+1</button><button class="sub action-btn" onclick="sub()">-1</button><button class="reset action-btn" onclick="resetWins()">reset</button></div><div class="card wide"><h3>Guía de controles</h3><div class="help"><div>⬆️ or = or + → suma +1</div><div>⬇️ or - → resta -1</div><div>0 → resetea el valor actual a 0</div><div>Home → bloquea / desbloquea el control</div><div>🔒 / 🔓 → hace lo mismo que Home</div><div>Meta final → cambia el número después de la barra</div><div>Texto → cambia la palabra final</div><div>Valor actual → escribe un número exacto manualmente</div><div>Fuente → cambia la tipografía del overlay</div><div>reset de Meta final → vuelve a 10</div><div>reset de Texto → vuelve a wins</div><div>reset de Valor actual → vuelve a 0</div></div><div class="note">Cuando el control está bloqueado, ni las teclas ni los botones cambian nada.</div></div></div></div><script type="module">import{initializeApp as i}from"https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";import{getDatabase as g,ref as r,onValue as o,set as s,get as h}from"https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";const c={apiKey:"AIzaSyDAcg0UGMQ-iJbk_E8FSNLRipx2MvcJj4",authDomain:"wins-mine.firebaseapp.com",databaseURL:"https://wins-mine-default-rtdb.firebaseio.com/",projectId:"wins-mine",storageBucket:"wins-mine.firebasestorage.app",messagingSenderId:"328422738631",appId:"1:328422738631:web:dd115c799f82f5cb7e0ce2"},a=i(c),d=g(a),w=r(d,"overlay/wins"),m=r(d,"overlay/max"),l=r(d,"overlay/label"),k=r(d,"overlay/locked"),fref=r(d,"overlay/font");let n=0,t=!1;const p=new URLSearchParams(location.search),u="control"===p.get("view"),N=document.getElementById("num"),M=document.getElementById("maxnum"),L=document.getElementById("label"),I=document.getElementById("maxInput"),T=document.getElementById("labelInput"),V=document.getElementById("manualInput"),F=document.getElementById("fontSelect"),B=document.getElementById("lockBtn"),C=document.getElementById("lockIcon"),A=document.getElementById("lockText"),O=document.getElementById("overlay"),body=document.body;if(u){body.className="control"}else{body.className="live"}function y(e){document.documentElement.style.setProperty("--font",e||"Arial, sans-serif")}function U(){if(!B)return;document.querySelectorAll(".action-btn").forEach(e=>{e.disabled=t,e.classList.toggle("disabled",t)}),t?(C.textContent="🔒",A.textContent="Bloqueado",B.classList.remove("unlocked-style"),B.classList.add("locked-style")):(C.textContent="🔓",A.textContent="Activo",B.classList.remove("locked-style"),B.classList.add("unlocked-style"))}async function boot(){const [W,MX,LB,LK,FT]=await Promise.all([h(w),h(m),h(l),h(k),h(fref)]);n=W.val()??0;N.textContent=n;n<0?N.classList.add("negativo"):N.classList.remove("negativo");M.textContent=MX.val()??10;L.textContent=LB.val()??"wins";t=LK.val()??!1;const ff=FT.val()??"Arial, sans-serif";y(ff);if(F)F.value=ff;U();O.classList.add("ready");document.body.classList.add("ready");o(w,e=>{n=e.val()??0;N.textContent=n;n<0?N.classList.add("negativo"):N.classList.remove("negativo")});o(m,e=>{M.textContent=e.val()??10});o(l,e=>{L.textContent=e.val()??"wins"});o(k,e=>{t=e.val()??!1;U()});o(fref,e=>{const ff2=e.val()??"Arial, sans-serif";y(ff2);if(F&&F.value!==ff2)F.value=ff2})}u&&(N.contentEditable="true",M.contentEditable="true",L.contentEditable="true",N.spellcheck=!1,M.spellcheck=!1,L.spellcheck=!1,[N,M,L].forEach(e=>e.addEventListener("keydown",async a=>{"Enter"===a.key&&(a.preventDefault(),e.blur())})),N.addEventListener("blur",async()=>{if(t)return;const e=parseInt(N.textContent.trim(),10);isNaN(e)||(await s(w,e))}),M.addEventListener("blur",async()=>{if(t)return;const e=parseInt(M.textContent.trim(),10);isNaN(e)||(await s(m,e))}),L.addEventListener("blur",async()=>{if(t)return;const e=L.textContent.trim();e&&await s(l,e)}),document.addEventListener("keydown",async e=>{if("Home"===e.key)return await s(k,!t),void 0;if(t)return;if(["ArrowUp","=","+"].includes(e.key))return await s(w,n+1),void 0;if(["ArrowDown","-"].includes(e.key))return await s(w,n-1),void 0;"0"===e.key&&await s(w,0)}));window.toggleLock=async()=>{await s(k,!t)};window.add=async()=>{t||await s(w,n+1)};window.sub=async()=>{t||await s(w,n-1)};window.resetWins=async()=>{t||await s(w,0)};window.setMax=async()=>{if(t)return;const e=I.value.trim();""!==e&&await s(m,Number(e))};window.resetMax=async()=>{t||(await s(m,10),I.value="")};window.setLabel=async()=>{if(t)return;const e=T.value.trim();""!==e&&await s(l,e)};window.resetLabel=async()=>{t||(await s(l,"wins"),T.value="")};window.setValue=async()=>{if(t)return;const e=V.value.trim();""!==e&&await s(w,Number(e))};window.resetValue=async()=>{t||(await s(w,0),V.value="")};window.setFont=async()=>{if(t)return;const e=F.value.trim();e&&await s(fref,e)};window.resetFont=async()=>{t||(await s(fref,"Arial, sans-serif"),F.value="Arial, sans-serif")};boot();</script></body></html>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Overlay</title>
+
+  <!-- Fontes para o overlay -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Montserrat:wght@600;700;800&family=Oswald:wght@500;700&family=Poppins:wght@400;600;700;800&family=Roboto:wght@400;500;700;900&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    :root {
+      --bg1: #091019;
+      --bg2: #04070b;
+      --card1: #161c25;
+      --card2: #0f141b;
+      --line: rgba(255, 255, 255, 0.08);
+      --txt: #fff;
+      --muted: #c7ced8;
+      --acc: #00f5d4;
+      --inbg: #f2f3f5;
+      --intxt: #111;
+      --sh: 0 14px 30px rgba(0, 0, 0, 0.45);
+
+      /* fonte só do overlay */
+      --overlay-font: Arial, sans-serif;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body.live {
+      width: fit-content;
+      height: fit-content;
+      overflow: hidden;
+      background: transparent;
+    }
+
+    body.control {
+      width: 100vw;
+      min-height: 100vh;
+      overflow: auto;
+      background:
+        radial-gradient(circle at top center, rgba(0, 245, 212, 0.08), transparent 22%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      color: var(--txt);
+    }
+
+    /* OVERLAY */
+    .overlay {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      color: #fff;
+      font-weight: 800;
+      white-space: nowrap;
+      font-family: var(--overlay-font);
+    }
+
+    body.live .overlay {
+      padding: 6px 12px;
+      border-radius: 14px;
+      background: linear-gradient(
+        90deg,
+        rgba(0, 245, 212, 0.22),
+        rgba(0, 245, 212, 0.08) 38%,
+        rgba(0, 0, 0, 0.12) 100%
+      );
+
+      /* sem blur */
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+
+      /* sem sombra borrada */
+      text-shadow: none;
+
+      font-size: 34px;
+    }
+
+    body.control .overlay-wrap {
+      display: flex;
+      justify-content: center;
+      padding-top: 18px;
+    }
+
+    body.control .overlay {
+      padding: 8px 18px;
+      border-radius: 16px;
+      background: linear-gradient(
+        90deg,
+        rgba(0, 245, 212, 0.22),
+        rgba(0, 245, 212, 0.08) 38%,
+        rgba(0, 0, 0, 0.12) 100%
+      );
+
+      /* sem blur */
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+
+      /* sem sombra borrada */
+      text-shadow: none;
+
+      font-size: 34px;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+    }
+
+    #num {
+      min-width: 24px;
+      text-align: center;
+    }
+
+    .negativo {
+      color: #ff4d4f !important;
+    }
+
+    .edit {
+      border-radius: 8px;
+      padding: 1px 4px;
+      cursor: text;
+    }
+
+    .edit:focus {
+      outline: 1px solid rgba(0, 245, 212, 0.45);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    /* PAINEL */
+    .panel {
+      display: none;
+    }
+
+    body.control .panel {
+      display: block;
+      padding: 16px 18px 24px;
+    }
+
+    .stack {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+    }
+
+    .row4 {
+      display: grid;
+      grid-template-columns: repeat(5, 220px);
+      gap: 16px;
+      justify-content: center;
+    }
+
+    .single {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .card {
+      width: 220px;
+      min-height: 220px;
+      box-sizing: border-box;
+      background: linear-gradient(180deg, var(--card1), var(--card2));
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: var(--sh);
+      padding: 14px;
+      color: var(--txt);
+    }
+
+    .guide {
+      width: 1188px;
+      min-height: auto;
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 16px;
+      color: var(--acc);
+    }
+
+    .soft {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+      min-height: 36px;
+      margin-bottom: 10px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 11px 12px;
+      border-radius: 12px;
+      border: none;
+      outline: none;
+      background: var(--inbg);
+      color: var(--intxt);
+      font-size: 15px;
+      margin-bottom: 10px;
+    }
+
+    input::placeholder {
+      color: rgba(0, 0, 0, 0.42);
+    }
+
+    button {
+      width: 100%;
+      border: none;
+      border-radius: 12px;
+      padding: 11px;
+      font-weight: 800;
+      font-size: 15px;
+      cursor: pointer;
+      margin-bottom: 10px;
+      transition: transform 0.12s ease, filter 0.12s ease, opacity 0.12s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.03);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .add {
+      background: #19e6c8;
+      color: #07100e;
+    }
+
+    .sub {
+      background: #ff4747;
+      color: #fff;
+    }
+
+    .reset {
+      background: #ffb000;
+      color: #111;
+    }
+
+    .apply {
+      background: #ececec;
+      color: #111;
+    }
+
+    .lock-btn {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      color: #fff;
+    }
+
+    .locked-style {
+      background: #612222 !important;
+    }
+
+    .unlocked-style {
+      background: #1e4f39 !important;
+    }
+
+    .help {
+      font-size: 14px;
+      line-height: 1.58;
+      color: var(--txt);
+    }
+
+    .help div {
+      margin: 0 0 3px;
+    }
+
+    .note {
+      margin-top: 10px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 1300px) {
+      .row4 {
+        grid-template-columns: repeat(3, 220px);
+      }
+
+      .guide {
+        width: 692px;
+      }
+    }
+
+    @media (max-width: 1000px) {
+      .row4 {
+        grid-template-columns: repeat(2, 220px);
+      }
+
+      .guide {
+        width: 456px;
+      }
+    }
+  </style>
+</head>
+
+<body class="live">
+  <div class="overlay-wrap">
+    <div class="overlay">
+      🏆
+      <span id="num" class="edit">0</span>
+      <span>/</span>
+      <span id="maxnum" class="edit">10</span>
+      <span id="label" class="edit">wins</span>
+    </div>
+  </div>
+
+  <div class="panel" id="panel">
+    <div class="stack">
+      <div class="single">
+        <div class="card">
+          <h3>Bloqueo</h3>
+          <div class="soft">Activa o desactiva el control completo</div>
+          <button id="lockBtn" class="lock-btn unlocked-style" onclick="toggleLock()">
+            <span id="lockIcon">🔓</span>
+            <span id="lockText">Activo</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="row4">
+        <div class="card">
+          <h3>Valor actual</h3>
+          <div class="soft">Escribe un número exacto manualmente</div>
+          <input id="manualInput" placeholder="Ex: 0" />
+          <button class="apply action-btn" onclick="setValue()">Aplicar</button>
+          <button class="reset action-btn" onclick="resetValue()">reset</button>
+        </div>
+
+        <div class="card">
+          <h3>Meta final</h3>
+          <div class="soft">Cambia el número después de la barra</div>
+          <input id="maxInput" placeholder="Ex: 10" />
+          <button class="apply action-btn" onclick="setMax()">Aplicar</button>
+          <button class="reset action-btn" onclick="resetMax()">reset</button>
+        </div>
+
+        <div class="card">
+          <h3>Texto</h3>
+          <div class="soft">Cambia la palabra final</div>
+          <input id="labelInput" placeholder="Ex: wins" />
+          <button class="apply action-btn" onclick="setLabel()">Aplicar</button>
+          <button class="reset action-btn" onclick="resetLabel()">reset</button>
+        </div>
+
+        <div class="card">
+          <h3>Fuente</h3>
+          <div class="soft">Cambia solo la fuente del overlay</div>
+          <select id="fontSelect">
+            <option value="Arial, sans-serif">Arial</option>
+            <option value="'Segoe UI', sans-serif">Segoe UI</option>
+            <option value="Inter, sans-serif">Inter</option>
+            <option value="Roboto, sans-serif">Roboto</option>
+            <option value="Poppins, sans-serif">Poppins</option>
+            <option value="Montserrat, sans-serif">Montserrat</option>
+            <option value="Verdana, sans-serif">Verdana</option>
+            <option value="Tahoma, sans-serif">Tahoma</option>
+            <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+            <option value="Georgia, serif">Georgia</option>
+            <option value="'Times New Roman', serif">Times New Roman</option>
+            <option value="'Courier New', monospace">Courier New</option>
+            <option value="Oswald, sans-serif">Oswald</option>
+            <option value="Impact, sans-serif">Impact</option>
+          </select>
+          <button class="apply action-btn" onclick="setFont()">Aplicar</button>
+          <button class="reset action-btn" onclick="resetFont()">reset</button>
+        </div>
+
+        <div class="card">
+          <h3>Control rápido</h3>
+          <div class="soft">Ajuste inmediato del contador</div>
+          <button class="add action-btn" onclick="add()">+1</button>
+          <button class="sub action-btn" onclick="sub()">-1</button>
+          <button class="reset action-btn" onclick="resetWins()">reset</button>
+        </div>
+      </div>
+
+      <div class="single">
+        <div class="card guide">
+          <h3>Guía de controles</h3>
+          <div class="help">
+            <div>⬆️ or = or + → suma +1</div>
+            <div>⬇️ or - → resta -1</div>
+            <div>0 → resetea el valor actual a 0</div>
+            <div>Home → bloquea / desbloquea el control</div>
+            <div>🔒 / 🔓 → hace lo mismo que Home</div>
+            <div>Meta final → cambia el número después de la barra</div>
+            <div>Texto → cambia la palabra final</div>
+            <div>Valor actual → escribe un número exacto manualmente</div>
+            <div>Fuente → cambia solo la tipografía del overlay</div>
+            <div>reset de Meta final → vuelve a 10</div>
+            <div>reset de Texto → vuelve a wins</div>
+            <div>reset de Valor actual → vuelve a 0</div>
+          </div>
+          <div class="note">
+            Cuando el control está bloqueado, ni las teclas ni los botones cambian nada.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+    import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDAcg0UGMQ-iJbk_E8FSNLRipx2MvcJj4",
+      authDomain: "wins-mine.firebaseapp.com",
+      databaseURL: "https://wins-mine-default-rtdb.firebaseio.com/",
+      projectId: "wins-mine",
+      storageBucket: "wins-mine.firebasestorage.app",
+      messagingSenderId: "328422738631",
+      appId: "1:328422738631:web:dd115c799f82f5cb7e0ce2"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const winsRef = ref(db, "overlay/wins");
+    const maxRef = ref(db, "overlay/max");
+    const labelRef = ref(db, "overlay/label");
+    const lockedRef = ref(db, "overlay/locked");
+    const fontRef = ref(db, "overlay/font");
+
+    let wins = 0;
+    let locked = false;
+
+    const params = new URLSearchParams(location.search);
+    const isControl = params.get("view") === "control";
+
+    const num = document.getElementById("num");
+    const maxnum = document.getElementById("maxnum");
+    const label = document.getElementById("label");
+
+    const maxInput = document.getElementById("maxInput");
+    const labelInput = document.getElementById("labelInput");
+    const manualInput = document.getElementById("manualInput");
+    const fontSelect = document.getElementById("fontSelect");
+
+    const lockBtn = document.getElementById("lockBtn");
+    const lockIcon = document.getElementById("lockIcon");
+    const lockText = document.getElementById("lockText");
+
+    document.body.className = isControl ? "control" : "live";
+
+    function applyOverlayFont(fontValue) {
+      document.documentElement.style.setProperty(
+        "--overlay-font",
+        fontValue || "Arial, sans-serif"
+      );
+    }
+
+    function updateLockUI() {
+      if (!lockBtn) return;
+
+      const actionButtons = document.querySelectorAll(".action-btn");
+
+      actionButtons.forEach((button) => {
+        button.disabled = locked;
+        button.style.opacity = locked ? ".55" : "1";
+        button.style.pointerEvents = locked ? "none" : "auto";
+      });
+
+      if (locked) {
+        lockIcon.textContent = "🔒";
+        lockText.textContent = "Bloqueado";
+        lockBtn.classList.remove("unlocked-style");
+        lockBtn.classList.add("locked-style");
+      } else {
+        lockIcon.textContent = "🔓";
+        lockText.textContent = "Activo";
+        lockBtn.classList.remove("locked-style");
+        lockBtn.classList.add("unlocked-style");
+      }
+    }
+
+    onValue(winsRef, (snapshot) => {
+      wins = snapshot.val() ?? 0;
+      num.textContent = wins;
+
+      if (wins < 0) {
+        num.classList.add("negativo");
+      } else {
+        num.classList.remove("negativo");
+      }
+    });
+
+    onValue(maxRef, (snapshot) => {
+      maxnum.textContent = snapshot.val() ?? 10;
+    });
+
+    onValue(labelRef, (snapshot) => {
+      label.textContent = snapshot.val() ?? "wins";
+    });
+
+    onValue(lockedRef, (snapshot) => {
+      locked = snapshot.val() ?? false;
+      updateLockUI();
+    });
+
+    onValue(fontRef, (snapshot) => {
+      const savedFont = snapshot.val() ?? "Arial, sans-serif";
+      applyOverlayFont(savedFont);
+
+      if (fontSelect && fontSelect.value !== savedFont) {
+        fontSelect.value = savedFont;
+      }
+    });
+
+    if (isControl) {
+      num.contentEditable = "true";
+      maxnum.contentEditable = "true";
+      label.contentEditable = "true";
+
+      num.spellcheck = false;
+      maxnum.spellcheck = false;
+      label.spellcheck = false;
+
+      [num, maxnum, label].forEach((element) => {
+        element.addEventListener("keydown", (event) => {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            element.blur();
+          }
+        });
+      });
+
+      num.addEventListener("blur", async () => {
+        if (locked) return;
+
+        const value = parseInt(num.textContent.trim(), 10);
+        if (!isNaN(value)) {
+          await set(winsRef, value);
+        }
+      });
+
+      maxnum.addEventListener("blur", async () => {
+        if (locked) return;
+
+        const value = parseInt(maxnum.textContent.trim(), 10);
+        if (!isNaN(value)) {
+          await set(maxRef, value);
+        }
+      });
+
+      label.addEventListener("blur", async () => {
+        if (locked) return;
+
+        const value = label.textContent.trim();
+        if (value) {
+          await set(labelRef, value);
+        }
+      });
+
+      document.addEventListener("keydown", async (event) => {
+        if (event.key === "Home") {
+          await set(lockedRef, !locked);
+          return;
+        }
+
+        if (locked) return;
+
+        if (["ArrowUp", "=", "+"].includes(event.key)) {
+          await set(winsRef, wins + 1);
+          return;
+        }
+
+        if (["ArrowDown", "-"].includes(event.key)) {
+          await set(winsRef, wins - 1);
+          return;
+        }
+
+        if (event.key === "0") {
+          await set(winsRef, 0);
+        }
+      });
+    }
+
+    window.toggleLock = async () => {
+      await set(lockedRef, !locked);
+    };
+
+    window.add = async () => {
+      if (locked) return;
+      await set(winsRef, wins + 1);
+    };
+
+    window.sub = async () => {
+      if (locked) return;
+      await set(winsRef, wins - 1);
+    };
+
+    window.resetWins = async () => {
+      if (locked) return;
+      await set(winsRef, 0);
+    };
+
+    window.setMax = async () => {
+      if (locked) return;
+
+      const value = maxInput.value.trim();
+      if (value !== "") {
+        await set(maxRef, Number(value));
+      }
+    };
+
+    window.resetMax = async () => {
+      if (locked) return;
+
+      await set(maxRef, 10);
+      maxInput.value = "";
+    };
+
+    window.setLabel = async () => {
+      if (locked) return;
+
+      const value = labelInput.value.trim();
+      if (value !== "") {
+        await set(labelRef, value);
+      }
+    };
+
+    window.resetLabel = async () => {
+      if (locked) return;
+
+      await set(labelRef, "wins");
+      labelInput.value = "";
+    };
+
+    window.setValue = async () => {
+      if (locked) return;
+
+      const value = manualInput.value.trim();
+      if (value !== "") {
+        await set(winsRef, Number(value));
+      }
+    };
+
+    window.resetValue = async () => {
+      if (locked) return;
+
+      await set(winsRef, 0);
+      manualInput.value = "";
+    };
+
+    window.setFont = async () => {
+      if (locked) return;
+
+      const value = fontSelect.value.trim();
+      if (value) {
+        await set(fontRef, value);
+      }
+    };
+
+    window.resetFont = async () => {
+      if (locked) return;
+
+      await set(fontRef, "Arial, sans-serif");
+      fontSelect.value = "Arial, sans-serif";
+    };
+  </script>
+</body>
+</html>
