@@ -155,16 +155,16 @@
       grid-template-columns: 220px 220px;
       gap: 16px;
       width: fit-content;
-      margin-left: -80px;
+      margin-left: -40px;
     }
 
     .workspace {
       display: grid;
-      grid-template-columns: 220px 220px 220px 456px;
+      grid-template-columns: 220px 220px 220px 220px;
       gap: 16px;
       align-items: start;
       width: fit-content;
-      margin-left: -80px;
+      margin-left: -40px;
     }
 
     .left-grid {
@@ -178,6 +178,9 @@
     .right-side {
       grid-column: 4;
       grid-row: 1 / span 2;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
     }
 
     .single {
@@ -199,11 +202,45 @@
     }
 
     .appearance-card {
+      width: 220px;
+      overflow: hidden;
+      transition: all 0.22s ease;
+    }
+
+    .appearance-card.expanded {
       width: 456px;
     }
 
+    .appearance-body {
+      display: none;
+      margin-top: 10px;
+    }
+
+    .appearance-card.expanded .appearance-body {
+      display: block;
+    }
+
+    .appearance-toggle {
+      margin-top: 6px;
+      margin-bottom: 0;
+    }
+
+    .presets-card {
+      width: 220px;
+      overflow: hidden;
+      transition: all 0.22s ease;
+    }
+
+    .presets-body-advanced {
+      display: none;
+    }
+
+    .presets-card.expanded .presets-body-advanced {
+      display: block;
+    }
+
     .guide {
-      width: 1152px;
+      width: 928px;
       min-height: auto;
     }
 
@@ -402,9 +439,14 @@
       .right-side {
         grid-column: 1 / span 3;
         grid-row: auto;
+        flex-direction: row;
+        flex-wrap: wrap;
       }
 
-      .appearance-card,
+      .appearance-card.expanded {
+        width: 456px;
+      }
+
       .guide {
         width: 692px;
       }
@@ -424,8 +466,12 @@
         grid-template-columns: 220px;
       }
 
-      .right-side,
-      .appearance-card,
+      .right-side {
+        width: 456px;
+        flex-direction: column;
+      }
+
+      .appearance-card.expanded,
       .guide {
         width: 456px;
       }
@@ -521,20 +567,25 @@
             <button class="reset action-btn" onclick="resetFont()">reset</button>
           </div>
 
-          <div class="card">
+          <div class="card presets-card" id="presetsCard">
             <h3>Presets</h3>
             <div class="soft">Guarda todo: ícono, valor, meta, texto, fuente, colores y fondo</div>
 
             <input id="presetName" placeholder="Nombre del preset" />
-            <select id="presetSelect">
+            <select id="presetSelect" onchange="handlePresetSelection()">
               <option value="">Selecciona un preset</option>
             </select>
 
             <div class="preset-actions">
               <button onclick="savePreset()">Guardar preset</button>
-              <button onclick="applyPreset()">Aplicar preset</button>
-              <button onclick="overwritePreset()">Sobrescribir preset</button>
-              <button class="danger" onclick="deletePreset()">Eliminar preset</button>
+            </div>
+
+            <div class="presets-body-advanced">
+              <div class="preset-actions">
+                <button onclick="applyPreset()">Aplicar preset</button>
+                <button onclick="overwritePreset()">Sobrescribir preset</button>
+                <button class="danger" onclick="deletePreset()">Eliminar preset</button>
+              </div>
             </div>
           </div>
 
@@ -548,68 +599,71 @@
         </div>
 
         <div class="right-side">
-          <div class="card appearance-card">
+          <div class="card appearance-card" id="appearanceCard">
             <h3>Apariencia</h3>
             <div class="soft">Personaliza colores, fondo, ícono y preview del overlay</div>
+            <button class="apply appearance-toggle" id="appearanceToggle" onclick="toggleAppearancePanel()">Abrir</button>
 
-            <div class="preview-box">
-              <div id="previewOverlay" class="preview-overlay">
-                <span id="previewIcon">🏆</span>
-                <span id="previewNum">0</span>
-                <span>/</span>
-                <span id="previewMax">10</span>
-                <span id="previewLabel">wins</span>
-              </div>
-            </div>
-
-            <div class="appearance-grid">
-              <div class="full">
-                <label><input type="checkbox" id="allToggle" /> Aplicar para todos</label>
+            <div class="appearance-body">
+              <div class="preview-box">
+                <div id="previewOverlay" class="preview-overlay">
+                  <span id="previewIcon">🏆</span>
+                  <span id="previewNum">0</span>
+                  <span>/</span>
+                  <span id="previewMax">10</span>
+                  <span id="previewLabel">wins</span>
+                </div>
               </div>
 
-              <div class="full">
-                <label>Cor global</label>
-                <input type="color" id="allColor" value="#ffffff" />
-              </div>
+              <div class="appearance-grid">
+                <div class="full">
+                  <label><input type="checkbox" id="allToggle" /> Aplicar para todos</label>
+                </div>
 
-              <div class="half">
-                <label>Número</label>
-                <input type="color" id="numColor" value="#ffffff" />
-              </div>
+                <div class="full">
+                  <label>Cor global</label>
+                  <input type="color" id="allColor" value="#ffffff" />
+                </div>
 
-              <div class="half">
-                <label>Meta</label>
-                <input type="color" id="maxColor" value="#ffffff" />
-              </div>
+                <div class="half">
+                  <label>Número</label>
+                  <input type="color" id="numColor" value="#ffffff" />
+                </div>
 
-              <div class="half">
-                <label>Texto</label>
-                <input type="color" id="labelColor" value="#ffffff" />
-              </div>
+                <div class="half">
+                  <label>Meta</label>
+                  <input type="color" id="maxColor" value="#ffffff" />
+                </div>
 
-              <div class="half">
-                <label>Ícono</label>
-                <input type="color" id="iconColor" value="#ffffff" />
-              </div>
+                <div class="half">
+                  <label>Texto</label>
+                  <input type="color" id="labelColor" value="#ffffff" />
+                </div>
 
-              <div class="half">
-                <label>Negativo</label>
-                <input type="color" id="negColor" value="#ff4d4f" />
-              </div>
+                <div class="half">
+                  <label>Ícono</label>
+                  <input type="color" id="iconColor" value="#ffffff" />
+                </div>
 
-              <div class="half">
-                <label>Fondo</label>
-                <input type="color" id="bgColor" value="#000000" />
-              </div>
+                <div class="half">
+                  <label>Negativo</label>
+                  <input type="color" id="negColor" value="#ff4d4f" />
+                </div>
 
-              <div class="full">
-                <label>Transparencia</label>
-                <input type="range" id="bgAlpha" min="0" max="1" step="0.01" value="0.3" />
-              </div>
+                <div class="half">
+                  <label>Fondo</label>
+                  <input type="color" id="bgColor" value="#000000" />
+                </div>
 
-              <div class="full">
-                <button class="apply action-btn" onclick="saveStyle()">Aplicar</button>
-                <button class="reset action-btn" onclick="resetStyle()">reset</button>
+                <div class="full">
+                  <label>Transparencia</label>
+                  <input type="range" id="bgAlpha" min="0" max="1" step="0.01" value="0.3" />
+                </div>
+
+                <div class="full">
+                  <button class="apply action-btn" onclick="saveStyle()">Aplicar</button>
+                  <button class="reset action-btn" onclick="resetStyle()">reset</button>
+                </div>
               </div>
             </div>
           </div>
@@ -714,6 +768,10 @@
 
     const presetName = document.getElementById("presetName");
     const presetSelect = document.getElementById("presetSelect");
+
+    const appearanceCard = document.getElementById("appearanceCard");
+    const appearanceToggle = document.getElementById("appearanceToggle");
+    const presetsCard = document.getElementById("presetsCard");
 
     document.body.className = isControl ? "control" : "live";
 
@@ -864,6 +922,7 @@
         option.textContent = preset.name || key;
         presetSelect.appendChild(option);
       });
+      presetsCard.classList.toggle("expanded", !!presetSelect.value);
     }
 
     onValue(winsRef, (snapshot) => {
@@ -997,6 +1056,16 @@
         }
       });
     }
+
+    window.toggleAppearancePanel = () => {
+      const expanded = appearanceCard.classList.toggle("expanded");
+      appearanceToggle.textContent = expanded ? "Cerrar" : "Abrir";
+    };
+
+    window.handlePresetSelection = () => {
+      const hasPreset = !!presetSelect.value;
+      presetsCard.classList.toggle("expanded", hasPreset);
+    };
 
     window.toggleLock = async () => {
       await set(lockedRef, !locked);
@@ -1198,6 +1267,7 @@
 
       await remove(ref(db, `overlay/presets/${key}`));
       presetSelect.value = "";
+      presetsCard.classList.remove("expanded");
     };
 
     window.resetAll = async () => {
@@ -1225,6 +1295,9 @@
       labelInput.value = "";
       presetName.value = "";
       presetSelect.value = "";
+      presetsCard.classList.remove("expanded");
+      appearanceCard.classList.remove("expanded");
+      appearanceToggle.textContent = "Abrir";
     };
 
     updatePreview();
