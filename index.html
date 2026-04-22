@@ -57,13 +57,31 @@ body {
   <span class="label">wins</span>
 </div>
 
-<script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDAcg0UGMQ-iJbk_E8FSNLRipx2MvcJj4",
+  authDomain: "wins-mine.firebaseapp.com",
+  databaseURL: "https://wins-mine-default-rtdb.firebaseio.com/",
+  projectId: "wins-mine",
+  storageBucket: "wins-mine.firebasestorage.app",
+  messagingSenderId: "328422738631",
+  appId: "1:328422738631:web:dd115c799f82f5cb7e0ce2"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const winsRef = ref(db, "overlay/wins");
+
 let wins = 0;
 let locked = false;
 
 const num = document.getElementById("num");
 const box = document.getElementById("box");
 
+// posição salva
 const savedX = localStorage.getItem("overlayX");
 const savedY = localStorage.getItem("overlayY");
 
@@ -82,7 +100,16 @@ function render() {
   }
 }
 
-document.addEventListener("keydown", (e) => {
+// 🔥 sincronização Firebase
+onValue(winsRef, (snapshot) => {
+  const value = snapshot.val();
+  wins = typeof value === "number" ? value : 0;
+  render();
+});
+
+// 🎮 teclas
+document.addEventListener("keydown", async (e) => {
+
   if (e.key === "Home") {
     locked = !locked;
     return;
@@ -90,22 +117,23 @@ document.addEventListener("keydown", (e) => {
 
   if (locked) return;
 
-  if (e.key === "=") {
-    wins++;
-    render();
+  // subir (seta ↑ ou =)
+  if (e.key === "ArrowUp" || e.key === "=") {
+    await set(winsRef, wins + 1);
   }
 
-  if (e.key === "-") {
-    wins--;
-    render();
+  // descer (seta ↓ ou -)
+  if (e.key === "ArrowDown" || e.key === "-") {
+    await set(winsRef, wins - 1);
   }
 
+  // zerar
   if (e.key === "0") {
-    wins = 0;
-    render();
+    await set(winsRef, 0);
   }
 });
 
+// arrastar
 let dragging = false;
 let offsetX = 0;
 let offsetY = 0;
