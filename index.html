@@ -10,60 +10,70 @@ html, body {
   padding: 0;
   background: transparent;
   overflow: hidden;
-  width: max-content;
-  height: max-content;
+  width: fit-content;
+  height: fit-content;
   font-family: Arial, sans-serif;
 }
 
-/* 🔥 overlay pequeno */
 .overlay {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-
-  font-size: 36px;
+  font-size: 34px;
   font-weight: bold;
   color: white;
-
   text-shadow: 0 0 10px black, 0 0 20px black;
-
   white-space: nowrap;
 }
 
-/* painel */
+#num {
+  min-width: 25px;
+  text-align: center;
+}
+
+.negativo {
+  color: #ff3b3b !important;
+}
+
 .panel {
   position: fixed;
   bottom: 20px;
   left: 20px;
-
-  width: 240px;
-  padding: 15px;
-
-  background: #1c1c1c;
-  border-radius: 12px;
-
   display: none;
+  background: transparent;
+}
+
+.grid {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  max-width: 760px;
+}
+
+.card {
+  background: linear-gradient(145deg, #1c1c1c, #111);
+  padding: 12px;
+  border-radius: 12px;
+  width: 150px;
+  box-shadow: 0 0 15px #000;
   color: white;
 }
 
-/* caixas separadas */
-.card {
-  background: #2a2a2a;
-  padding: 10px;
-  border-radius: 10px;
-  margin-bottom: 10px;
+.card.wide {
+  width: 320px;
 }
 
 .card h3 {
   margin: 0 0 8px;
+  font-size: 13px;
   color: #00ffcc;
-  font-size: 14px;
 }
 
 button {
   width: 100%;
   margin-top: 5px;
-  padding: 6px;
+  padding: 7px;
   border: none;
   border-radius: 6px;
   font-weight: bold;
@@ -71,13 +81,64 @@ button {
 }
 
 .add { background: #00ffcc; color: black; }
-.sub { background: #ff3b3b; }
+.sub { background: #ff3b3b; color: white; }
 .reset { background: orange; color: black; }
+.apply { background: #dcdcdc; color: black; }
 
 input {
   width: 100%;
   margin-top: 5px;
-  padding: 4px;
+  padding: 6px 7px;
+  border-radius: 5px;
+  border: none;
+  box-sizing: border-box;
+  outline: none;
+}
+
+input::placeholder {
+  color: rgba(0,0,0,0.45);
+}
+
+.lock-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #2b2b2b;
+  color: white;
+}
+
+.locked-style {
+  background: #5a1f1f !important;
+}
+
+.unlocked-style {
+  background: #1c4732 !important;
+}
+
+.help-list {
+  font-size: 13px;
+  line-height: 1.55;
+  color: #e8e8e8;
+}
+
+.help-list b {
+  color: #ffffff;
+}
+
+.help-note {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #bfbfbf;
+}
+
+.muted {
+  opacity: 0.75;
+}
+
+.disabled-ui {
+  opacity: 0.55;
+  pointer-events: none;
 }
 </style>
 </head>
@@ -89,35 +150,61 @@ input {
 </div>
 
 <div class="panel" id="panel">
+  <div class="grid">
 
-  <div class="card">
-    <h3>CONTROL</h3>
-    <button class="add" onclick="add()">+1</button>
-    <button class="sub" onclick="sub()">-1</button>
-    <button class="reset" onclick="resetWins()">reset</button>
+    <div class="card">
+      <h3>CONTROL</h3>
+      <button id="lockBtn" class="lock-btn unlocked-style" onclick="toggleLock()">
+        <span id="lockIcon">🔓</span>
+        <span id="lockText">Desbloqueado</span>
+      </button>
+      <button class="add action-btn" onclick="add()">+1</button>
+      <button class="sub action-btn" onclick="sub()">-1</button>
+      <button class="reset action-btn" onclick="resetWins()">reset</button>
+    </div>
+
+    <div class="card">
+      <h3>Meta final</h3>
+      <input id="maxInput" placeholder="Ex: 10">
+      <button class="apply action-btn" onclick="setMax()">Aplicar</button>
+      <button class="reset action-btn" onclick="resetMax()">reset</button>
+    </div>
+
+    <div class="card">
+      <h3>Texto</h3>
+      <input id="labelInput" placeholder="Ex: wins">
+      <button class="apply action-btn" onclick="setLabel()">Aplicar</button>
+      <button class="reset action-btn" onclick="resetLabel()">reset</button>
+    </div>
+
+    <div class="card">
+      <h3>Valor actual</h3>
+      <input id="manualInput" placeholder="Ex: 0">
+      <button class="apply action-btn" onclick="setValue()">Aplicar</button>
+      <button class="reset action-btn" onclick="resetValue()">reset</button>
+    </div>
+
+    <div class="card wide">
+      <h3>Guía de controles</h3>
+      <div class="help-list">
+        <div><b>↑</b> o <b>=</b> o <b>+</b> → suma <b>+1</b></div>
+        <div><b>↓</b> o <b>-</b> → resta <b>-1</b></div>
+        <div><b>0</b> → resetea el <b>valor actual</b> a 0</div>
+        <div><b>Home</b> → bloquea / desbloquea el control</div>
+        <div><b>🔒 / 🔓</b> → hace lo mismo que <b>Home</b></div>
+        <div><b>Meta final</b> → cambia el número después de la barra</div>
+        <div><b>Texto</b> → cambia la palabra final</div>
+        <div><b>Valor actual</b> → escribe un número exacto manualmente</div>
+        <div><b>reset</b> de Meta final → vuelve a <b>10</b></div>
+        <div><b>reset</b> de Texto → vuelve a <b>wins</b></div>
+        <div><b>reset</b> de Valor actual → vuelve a <b>0</b></div>
+      </div>
+      <div class="help-note">
+        Cuando el control está bloqueado, ni las teclas ni los botones cambian nada.
+      </div>
+    </div>
+
   </div>
-
-  <div class="card">
-    <h3>Meta final</h3>
-    <input id="maxInput">
-    <button onclick="setMax()">Aplicar</button>
-    <button class="reset" onclick="resetMax()">reset</button>
-  </div>
-
-  <div class="card">
-    <h3>Texto</h3>
-    <input id="labelInput">
-    <button onclick="setLabel()">Aplicar</button>
-    <button class="reset" onclick="resetLabel()">reset</button>
-  </div>
-
-  <div class="card">
-    <h3>Valor actual</h3>
-    <input id="manualInput">
-    <button onclick="setValue()">Aplicar</button>
-    <button class="reset" onclick="resetValue()">reset</button>
-  </div>
-
 </div>
 
 <script type="module">
@@ -140,14 +227,23 @@ const db = getDatabase(app);
 const winsRef = ref(db, "overlay/wins");
 const maxRef = ref(db, "overlay/max");
 const labelRef = ref(db, "overlay/label");
+const lockedRef = ref(db, "overlay/locked");
 
 let wins = 0;
+let locked = false;
 
 const num = document.getElementById("num");
 const maxEl = document.getElementById("max");
 const labelEl = document.getElementById("label");
 
-// mostrar panel solo en control
+const maxInput = document.getElementById("maxInput");
+const labelInput = document.getElementById("labelInput");
+const manualInput = document.getElementById("manualInput");
+
+const lockBtn = document.getElementById("lockBtn");
+const lockIcon = document.getElementById("lockIcon");
+const lockText = document.getElementById("lockText");
+
 const params = new URLSearchParams(location.search);
 const isControl = params.get("view") === "control";
 
@@ -155,47 +251,136 @@ if (isControl) {
   document.getElementById("panel").style.display = "block";
 }
 
-// 🔥 sync
+function updateLockUI() {
+  if (!lockBtn) return;
+
+  const actionButtons = document.querySelectorAll(".action-btn");
+  actionButtons.forEach(btn => {
+    if (locked) btn.classList.add("disabled-ui");
+    else btn.classList.remove("disabled-ui");
+  });
+
+  if (locked) {
+    lockIcon.textContent = "🔒";
+    lockText.textContent = "Bloqueado";
+    lockBtn.classList.remove("unlocked-style");
+    lockBtn.classList.add("locked-style");
+  } else {
+    lockIcon.textContent = "🔓";
+    lockText.textContent = "Desbloqueado";
+    lockBtn.classList.remove("locked-style");
+    lockBtn.classList.add("unlocked-style");
+  }
+}
+
+// sync wins
 onValue(winsRef, s => {
   wins = s.val() ?? 0;
   num.textContent = wins;
+
+  if (wins < 0) num.classList.add("negativo");
+  else num.classList.remove("negativo");
 });
 
+// sync meta
 onValue(maxRef, s => {
   maxEl.textContent = "/" + (s.val() ?? 10);
 });
 
+// sync texto
 onValue(labelRef, s => {
   labelEl.textContent = s.val() ?? "wins";
 });
 
-// 🚫 teclado só no control
+// sync lock
+onValue(lockedRef, s => {
+  locked = s.val() ?? false;
+  updateLockUI();
+});
+
+// teclado só no control
 if (isControl) {
   document.addEventListener("keydown", async (e) => {
+    if (e.key === "Home") {
+      await set(lockedRef, !locked);
+      return;
+    }
 
-    if (["ArrowUp","=","+"].includes(e.key))
+    if (locked) return;
+
+    if (["ArrowUp", "=", "+"].includes(e.key)) {
       await set(winsRef, wins + 1);
+    }
 
-    if (["ArrowDown","-"].includes(e.key))
+    if (["ArrowDown", "-"].includes(e.key)) {
       await set(winsRef, wins - 1);
+    }
 
-    if (e.key === "0")
+    if (e.key === "0") {
       await set(winsRef, 0);
+    }
   });
 }
 
-// botões
-window.add = () => set(winsRef, wins + 1);
-window.sub = () => set(winsRef, wins - 1);
+// lock
+window.toggleLock = async () => {
+  await set(lockedRef, !locked);
+};
 
-window.resetWins = () => set(winsRef, 0);
-window.resetMax = () => set(maxRef, 10);
-window.resetLabel = () => set(labelRef, "wins");
-window.resetValue = () => set(winsRef, 0);
+// control
+window.add = async () => {
+  if (locked) return;
+  await set(winsRef, wins + 1);
+};
 
-window.setMax = () => set(maxRef, Number(maxInput.value));
-window.setLabel = () => set(labelRef, labelInput.value);
-window.setValue = () => set(winsRef, Number(manualInput.value));
+window.sub = async () => {
+  if (locked) return;
+  await set(winsRef, wins - 1);
+};
+
+window.resetWins = async () => {
+  if (locked) return;
+  await set(winsRef, 0);
+};
+
+// meta
+window.setMax = async () => {
+  if (locked) return;
+  const value = maxInput.value.trim();
+  if (value !== "") await set(maxRef, Number(value));
+};
+
+window.resetMax = async () => {
+  if (locked) return;
+  await set(maxRef, 10);
+  maxInput.value = "";
+};
+
+// texto
+window.setLabel = async () => {
+  if (locked) return;
+  const value = labelInput.value.trim();
+  if (value !== "") await set(labelRef, value);
+};
+
+window.resetLabel = async () => {
+  if (locked) return;
+  await set(labelRef, "wins");
+  labelInput.value = "";
+};
+
+// valor
+window.setValue = async () => {
+  if (locked) return;
+  const value = manualInput.value.trim();
+  if (value !== "") await set(winsRef, Number(value));
+};
+
+window.resetValue = async () => {
+  if (locked) return;
+  await set(winsRef, 0);
+  manualInput.value = "";
+};
 </script>
 
 </body>
