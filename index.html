@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <title>Overlay</title>
 
-  <!-- Fontes para o overlay -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
@@ -26,10 +25,8 @@
       --intxt: #111;
       --sh: 0 14px 30px rgba(0, 0, 0, 0.45);
 
-      /* fonte só do overlay */
       --overlay-font: Arial, sans-serif;
 
-      /* aparencia do overlay live */
       --c-num: #ffffff;
       --c-max: #ffffff;
       --c-label: #ffffff;
@@ -62,7 +59,6 @@
       color: var(--txt);
     }
 
-    /* OVERLAY */
     .overlay {
       display: inline-flex;
       align-items: center;
@@ -77,14 +73,9 @@
       padding: 6px 12px;
       border-radius: 14px;
       background: var(--bg-custom);
-
-      /* sem blur */
       backdrop-filter: none;
       -webkit-backdrop-filter: none;
-
-      /* sem sombra borrada */
       text-shadow: none;
-
       font-size: 34px;
     }
 
@@ -103,19 +94,13 @@
         rgba(0, 245, 212, 0.08) 38%,
         rgba(0, 0, 0, 0.12) 100%
       );
-
-      /* sem blur */
       backdrop-filter: none;
       -webkit-backdrop-filter: none;
-
-      /* sem sombra borrada */
       text-shadow: none;
-
       font-size: 34px;
       box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
     }
 
-    /* cores só na live */
     body.live #icon {
       color: var(--c-icon);
     }
@@ -130,6 +115,17 @@
 
     body.live #label {
       color: var(--c-label);
+    }
+
+    #icon.editable {
+      cursor: text;
+      border-radius: 8px;
+      padding: 1px 4px;
+    }
+
+    #icon.editable:focus {
+      outline: 1px solid rgba(0, 245, 212, 0.45);
+      background: rgba(255, 255, 255, 0.06);
     }
 
     #num {
@@ -152,7 +148,6 @@
       background: rgba(255, 255, 255, 0.06);
     }
 
-    /* PAINEL */
     .panel {
       display: none;
     }
@@ -172,9 +167,10 @@
 
     .row4 {
       display: grid;
-      grid-template-columns: repeat(6, 220px);
+      grid-template-columns: repeat(4, 220px);
       gap: 16px;
       justify-content: center;
+      align-items: start;
     }
 
     .single {
@@ -185,7 +181,7 @@
 
     .card {
       width: 220px;
-      min-height: 220px;
+      min-height: auto;
       box-sizing: border-box;
       background: linear-gradient(180deg, var(--card1), var(--card2));
       border: 1px solid var(--line);
@@ -195,8 +191,18 @@
       color: var(--txt);
     }
 
+    .appearance-card {
+      width: 456px;
+      grid-column: span 2;
+    }
+
+    .presets-card {
+      width: 928px;
+      min-height: auto;
+    }
+
     .guide {
-      width: 1424px;
+      width: 928px;
       min-height: auto;
     }
 
@@ -215,7 +221,8 @@
     }
 
     input,
-    select {
+    select,
+    textarea {
       width: 100%;
       box-sizing: border-box;
       padding: 11px 12px;
@@ -248,6 +255,7 @@
       padding: 0;
       height: 20px;
       cursor: pointer;
+      background: transparent;
     }
 
     button {
@@ -291,6 +299,11 @@
       color: #111;
     }
 
+    .danger {
+      background: #7a1f1f;
+      color: #fff;
+    }
+
     .lock-btn {
       display: flex;
       justify-content: center;
@@ -323,14 +336,49 @@
       color: var(--muted);
     }
 
-    @media (max-width: 1500px) {
-      .row4 {
-        grid-template-columns: repeat(4, 220px);
-      }
+    .appearance-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 12px;
+      align-items: start;
+    }
 
-      .guide {
-        width: 928px;
-      }
+    .appearance-grid .full {
+      grid-column: 1 / -1;
+    }
+
+    .appearance-grid .half {
+      min-width: 0;
+    }
+
+    .preview-box {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 10px;
+    }
+
+    .preview-overlay {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      padding: 6px 12px;
+      border-radius: 14px;
+      font-weight: 800;
+      white-space: nowrap;
+      font-size: 28px;
+      min-height: 44px;
+    }
+
+    .preset-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .preset-actions .full {
+      grid-column: 1 / -1;
     }
 
     @media (max-width: 1300px) {
@@ -338,7 +386,13 @@
         grid-template-columns: repeat(3, 220px);
       }
 
-      .guide {
+      .appearance-card {
+        width: 456px;
+        grid-column: span 2;
+      }
+
+      .guide,
+      .presets-card {
         width: 692px;
       }
     }
@@ -348,8 +402,31 @@
         grid-template-columns: repeat(2, 220px);
       }
 
-      .guide {
+      .appearance-card {
         width: 456px;
+        grid-column: span 2;
+      }
+
+      .guide,
+      .presets-card {
+        width: 456px;
+      }
+
+      .appearance-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .appearance-grid .full,
+      .appearance-grid .half {
+        grid-column: auto;
+      }
+
+      .preset-actions {
+        grid-template-columns: 1fr;
+      }
+
+      .preset-actions .full {
+        grid-column: auto;
       }
     }
   </style>
@@ -435,37 +512,90 @@
           <button class="reset action-btn" onclick="resetWins()">reset</button>
         </div>
 
-        <div class="card">
+        <div class="card appearance-card">
           <h3>Apariencia</h3>
-          <div class="soft">Personaliza colores y fondo del overlay</div>
+          <div class="soft">Personaliza colores, fondo, ícono y preview del overlay</div>
 
-          <label><input type="checkbox" id="allToggle" /> Aplicar para todos</label>
+          <div class="preview-box">
+            <div id="previewOverlay" class="preview-overlay">
+              <span id="previewIcon">🏆</span>
+              <span id="previewNum">0</span>
+              <span>/</span>
+              <span id="previewMax">10</span>
+              <span id="previewLabel">wins</span>
+            </div>
+          </div>
 
-          <input type="color" id="allColor" value="#ffffff" />
+          <div class="appearance-grid">
+            <div class="full">
+              <label><input type="checkbox" id="allToggle" /> Aplicar para todos</label>
+            </div>
 
-          <label>Número</label>
-          <input type="color" id="numColor" value="#ffffff" />
+            <div class="full">
+              <label>Cor global</label>
+              <input type="color" id="allColor" value="#ffffff" />
+            </div>
 
-          <label>Meta</label>
-          <input type="color" id="maxColor" value="#ffffff" />
+            <div class="half">
+              <label>Número</label>
+              <input type="color" id="numColor" value="#ffffff" />
+            </div>
 
-          <label>Texto</label>
-          <input type="color" id="labelColor" value="#ffffff" />
+            <div class="half">
+              <label>Meta</label>
+              <input type="color" id="maxColor" value="#ffffff" />
+            </div>
 
-          <label>Ícono</label>
-          <input type="color" id="iconColor" value="#ffffff" />
+            <div class="half">
+              <label>Texto</label>
+              <input type="color" id="labelColor" value="#ffffff" />
+            </div>
 
-          <label>Negativo</label>
-          <input type="color" id="negColor" value="#ff4d4f" />
+            <div class="half">
+              <label>Ícono</label>
+              <input type="color" id="iconColor" value="#ffffff" />
+            </div>
 
-          <label>Fondo</label>
-          <input type="color" id="bgColor" value="#000000" />
+            <div class="half">
+              <label>Negativo</label>
+              <input type="color" id="negColor" value="#ff4d4f" />
+            </div>
 
-          <label>Transparencia</label>
-          <input type="range" id="bgAlpha" min="0" max="1" step="0.01" value="0.3" />
+            <div class="half">
+              <label>Fondo</label>
+              <input type="color" id="bgColor" value="#000000" />
+            </div>
 
-          <button class="apply action-btn" onclick="saveStyle()">Aplicar</button>
-          <button class="reset action-btn" onclick="resetStyle()">reset</button>
+            <div class="full">
+              <label>Transparencia</label>
+              <input type="range" id="bgAlpha" min="0" max="1" step="0.01" value="0.3" />
+            </div>
+
+            <div class="full">
+              <button class="apply action-btn" onclick="saveStyle()">Aplicar</button>
+              <button class="reset action-btn" onclick="resetStyle()">reset</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="single">
+        <div class="card presets-card">
+          <h3>Presets</h3>
+          <div class="soft">Guarda todo: ícono, valor, meta, texto, fuente, colores y fondo</div>
+
+          <input id="presetName" placeholder="Nombre del preset" />
+          <select id="presetSelect">
+            <option value="">Selecciona un preset</option>
+          </select>
+
+          <div class="preset-actions">
+            <button onclick="savePreset()">Guardar preset</button>
+            <button onclick="applyPreset()">Aplicar preset</button>
+            <button onclick="overwritePreset()">Sobrescribir preset</button>
+            <button class="danger" onclick="deletePreset()">Eliminar preset</button>
+            <button class="reset full" onclick="resetAll()">Reset total</button>
+          </div>
         </div>
       </div>
 
@@ -480,12 +610,15 @@
             <div>🔒 / 🔓 → hace lo mismo que Home</div>
             <div>Meta final → cambia el número después de la barra</div>
             <div>Texto → cambia la palabra final</div>
+            <div>Ícono → haz clic encima para editar o borrar</div>
             <div>Valor actual → escribe un número exacto manualmente</div>
             <div>Fuente → cambia solo la tipografía del overlay</div>
             <div>Apariencia → cambia colores y fondo del overlay</div>
+            <div>Presets → guarda y recupera configuraciones completas</div>
             <div>reset de Meta final → vuelve a 10</div>
             <div>reset de Texto → vuelve a wins</div>
             <div>reset de Valor actual → vuelve a 0</div>
+            <div>Reset total → vuelve todo al estado base</div>
           </div>
           <div class="note">
             Cuando el control está bloqueado, ni las teclas ni los botones cambian nada.
@@ -497,7 +630,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-    import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+    import { getDatabase, ref, onValue, set, remove } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDAcg0UGMQ-iJbk_E8FSNLRipx2MvcJj4",
@@ -518,9 +651,27 @@
     const lockedRef = ref(db, "overlay/locked");
     const fontRef = ref(db, "overlay/font");
     const styleRef = ref(db, "overlay/style");
+    const iconRef = ref(db, "overlay/icon");
+    const presetsRef = ref(db, "overlay/presets");
 
     let wins = 0;
     let locked = false;
+    let currentMax = 10;
+    let currentLabel = "wins";
+    let currentIcon = "🏆";
+    let currentFont = "Arial, sans-serif";
+    let currentStyle = {
+      all: false,
+      allColor: "#ffffff",
+      num: "#ffffff",
+      max: "#ffffff",
+      label: "#ffffff",
+      icon: "#ffffff",
+      neg: "#ff4d4f",
+      bg: "#000000",
+      alpha: 0.3
+    };
+    let presetsCache = {};
 
     const params = new URLSearchParams(location.search);
     const isControl = params.get("view") === "control";
@@ -528,6 +679,7 @@
     const num = document.getElementById("num");
     const maxnum = document.getElementById("maxnum");
     const label = document.getElementById("label");
+    const icon = document.getElementById("icon");
 
     const maxInput = document.getElementById("maxInput");
     const labelInput = document.getElementById("labelInput");
@@ -548,13 +700,34 @@
     const bgColor = document.getElementById("bgColor");
     const bgAlpha = document.getElementById("bgAlpha");
 
+    const previewOverlay = document.getElementById("previewOverlay");
+    const previewIcon = document.getElementById("previewIcon");
+    const previewNum = document.getElementById("previewNum");
+    const previewMax = document.getElementById("previewMax");
+    const previewLabel = document.getElementById("previewLabel");
+
+    const presetName = document.getElementById("presetName");
+    const presetSelect = document.getElementById("presetSelect");
+
     document.body.className = isControl ? "control" : "live";
+
+    function sanitizePresetKey(name) {
+      return name
+        .trim()
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9_-]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+    }
 
     function applyOverlayFont(fontValue) {
       document.documentElement.style.setProperty(
         "--overlay-font",
         fontValue || "Arial, sans-serif"
       );
+      currentFont = fontValue || "Arial, sans-serif";
+      updatePreview();
     }
 
     function updateLockUI() {
@@ -581,6 +754,53 @@
       }
     }
 
+    function getPreviewStyle() {
+      return {
+        all: allToggle.checked,
+        allColor: allColor.value,
+        num: numColor.value,
+        max: maxColor.value,
+        label: labelColor.value,
+        icon: iconColor.value,
+        neg: negColor.value,
+        bg: bgColor.value,
+        alpha: parseFloat(bgAlpha.value)
+      };
+    }
+
+    function updatePreview() {
+      const s = getPreviewStyle();
+
+      previewIcon.textContent = icon.textContent || "";
+      previewNum.textContent = num.textContent || "0";
+      previewMax.textContent = maxnum.textContent || "10";
+      previewLabel.textContent = label.textContent || "wins";
+      previewOverlay.style.fontFamily = currentFont;
+
+      const hex = (s.bg || "#000000").replace("#", "");
+      const r = parseInt(hex.substring(0, 2), 16);
+      const g = parseInt(hex.substring(2, 4), 16);
+      const b = parseInt(hex.substring(4, 6), 16);
+      previewOverlay.style.background = `rgba(${r}, ${g}, ${b}, ${s.alpha ?? 0.3})`;
+
+      if (s.all) {
+        previewNum.style.color = s.allColor;
+        previewMax.style.color = s.allColor;
+        previewLabel.style.color = s.allColor;
+        previewIcon.style.color = s.allColor;
+      } else {
+        previewNum.style.color = s.num;
+        previewMax.style.color = s.max;
+        previewLabel.style.color = s.label;
+        previewIcon.style.color = s.icon;
+      }
+
+      const previewValue = parseInt(previewNum.textContent, 10);
+      if (!isNaN(previewValue) && previewValue < 0) {
+        previewNum.style.color = s.neg;
+      }
+    }
+
     function applyStyle(styleData) {
       const s = styleData || {
         all: false,
@@ -593,6 +813,8 @@
         bg: "#000000",
         alpha: 0.3
       };
+
+      currentStyle = s;
 
       if (s.all) {
         document.documentElement.style.setProperty("--c-num", s.allColor || "#ffffff");
@@ -626,6 +848,18 @@
       if (negColor) negColor.value = s.neg || "#ff4d4f";
       if (bgColor) bgColor.value = s.bg || "#000000";
       if (bgAlpha) bgAlpha.value = s.alpha ?? 0.3;
+
+      updatePreview();
+    }
+
+    function populatePresetSelect() {
+      presetSelect.innerHTML = '<option value="">Selecciona un preset</option>';
+      Object.entries(presetsCache).forEach(([key, preset]) => {
+        const option = document.createElement("option");
+        option.value = key;
+        option.textContent = preset.name || key;
+        presetSelect.appendChild(option);
+      });
     }
 
     onValue(winsRef, (snapshot) => {
@@ -637,14 +871,26 @@
       } else {
         num.classList.remove("negativo");
       }
+
+      updatePreview();
     });
 
     onValue(maxRef, (snapshot) => {
-      maxnum.textContent = snapshot.val() ?? 10;
+      currentMax = snapshot.val() ?? 10;
+      maxnum.textContent = currentMax;
+      updatePreview();
     });
 
     onValue(labelRef, (snapshot) => {
-      label.textContent = snapshot.val() ?? "wins";
+      currentLabel = snapshot.val() ?? "wins";
+      label.textContent = currentLabel;
+      updatePreview();
+    });
+
+    onValue(iconRef, (snapshot) => {
+      currentIcon = snapshot.val() ?? "🏆";
+      icon.textContent = currentIcon;
+      updatePreview();
     });
 
     onValue(lockedRef, (snapshot) => {
@@ -665,21 +911,33 @@
       applyStyle(snapshot.val());
     });
 
+    onValue(presetsRef, (snapshot) => {
+      presetsCache = snapshot.val() || {};
+      populatePresetSelect();
+    });
+
     if (isControl) {
       num.contentEditable = "true";
       maxnum.contentEditable = "true";
       label.contentEditable = "true";
+      icon.contentEditable = "true";
+      icon.classList.add("editable");
 
       num.spellcheck = false;
       maxnum.spellcheck = false;
       label.spellcheck = false;
+      icon.spellcheck = false;
 
-      [num, maxnum, label].forEach((element) => {
+      [num, maxnum, label, icon].forEach((element) => {
         element.addEventListener("keydown", (event) => {
           if (event.key === "Enter") {
             event.preventDefault();
             element.blur();
           }
+        });
+
+        element.addEventListener("input", () => {
+          updatePreview();
         });
       });
 
@@ -708,6 +966,16 @@
         if (value) {
           await set(labelRef, value);
         }
+      });
+
+      icon.addEventListener("blur", async () => {
+        if (locked) return;
+        await set(iconRef, icon.textContent || "");
+      });
+
+      [allToggle, allColor, numColor, maxColor, labelColor, iconColor, negColor, bgColor, bgAlpha].forEach((el) => {
+        el.addEventListener("input", updatePreview);
+        el.addEventListener("change", updatePreview);
       });
 
       document.addEventListener("keydown", async (event) => {
@@ -848,6 +1116,130 @@
         alpha: 0.3
       });
     };
+
+    window.savePreset = async () => {
+      if (locked) return;
+
+      const rawName = presetName.value.trim();
+      if (!rawName) return;
+
+      const key = sanitizePresetKey(rawName);
+      if (!key) return;
+
+      await set(ref(db, `overlay/presets/${key}`), {
+        name: rawName,
+        value: wins,
+        max: currentMax,
+        label: currentLabel,
+        icon: currentIcon,
+        font: currentFont,
+        style: {
+          all: allToggle.checked,
+          allColor: allColor.value,
+          num: numColor.value,
+          max: maxColor.value,
+          label: labelColor.value,
+          icon: iconColor.value,
+          neg: negColor.value,
+          bg: bgColor.value,
+          alpha: parseFloat(bgAlpha.value)
+        }
+      });
+
+      presetName.value = "";
+    };
+
+    window.applyPreset = async () => {
+      if (locked) return;
+
+      const key = presetSelect.value;
+      if (!key || !presetsCache[key]) return;
+
+      const preset = presetsCache[key];
+
+      await set(winsRef, preset.value ?? 0);
+      await set(maxRef, preset.max ?? 10);
+      await set(labelRef, preset.label ?? "wins");
+      await set(iconRef, preset.icon ?? "🏆");
+      await set(fontRef, preset.font ?? "Arial, sans-serif");
+      await set(styleRef, preset.style || {
+        all: false,
+        allColor: "#ffffff",
+        num: "#ffffff",
+        max: "#ffffff",
+        label: "#ffffff",
+        icon: "#ffffff",
+        neg: "#ff4d4f",
+        bg: "#000000",
+        alpha: 0.3
+      });
+    };
+
+    window.overwritePreset = async () => {
+      if (locked) return;
+
+      const key = presetSelect.value;
+      if (!key || !presetsCache[key]) return;
+
+      await set(ref(db, `overlay/presets/${key}`), {
+        name: presetsCache[key].name || key,
+        value: wins,
+        max: currentMax,
+        label: currentLabel,
+        icon: currentIcon,
+        font: currentFont,
+        style: {
+          all: allToggle.checked,
+          allColor: allColor.value,
+          num: numColor.value,
+          max: maxColor.value,
+          label: labelColor.value,
+          icon: iconColor.value,
+          neg: negColor.value,
+          bg: bgColor.value,
+          alpha: parseFloat(bgAlpha.value)
+        }
+      });
+    };
+
+    window.deletePreset = async () => {
+      if (locked) return;
+
+      const key = presetSelect.value;
+      if (!key || !presetsCache[key]) return;
+
+      await remove(ref(db, `overlay/presets/${key}`));
+      presetSelect.value = "";
+    };
+
+    window.resetAll = async () => {
+      if (locked) return;
+
+      await set(winsRef, 0);
+      await set(maxRef, 10);
+      await set(labelRef, "wins");
+      await set(iconRef, "🏆");
+      await set(fontRef, "Arial, sans-serif");
+      await set(styleRef, {
+        all: false,
+        allColor: "#ffffff",
+        num: "#ffffff",
+        max: "#ffffff",
+        label: "#ffffff",
+        icon: "#ffffff",
+        neg: "#ff4d4f",
+        bg: "#000000",
+        alpha: 0.3
+      });
+
+      manualInput.value = "";
+      maxInput.value = "";
+      labelInput.value = "";
+      presetName.value = "";
+      presetSelect.value = "";
+    };
+
+    updatePreview();
   </script>
 </body>
 </html>
