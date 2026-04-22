@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Wins Overlay</title>
+
+<style>
+body {
+  margin: 0;
+  background: transparent;
+  overflow: hidden;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+/* caixa */
+.box {
+  position: fixed;
+  top: 60px;
+  left: 60px;
+  font-size: 48px;
+  font-weight: 700;
+  color: white;
+  text-shadow:
+    0 0 10px rgba(0,0,0,0.8),
+    0 0 20px rgba(0,0,0,0.6);
+  cursor: grab;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* número */
+#num {
+  min-width: 70px;
+  text-align: center;
+  transition: 0.2s;
+}
+
+/* negativo */
+.negativo {
+  color: #ff3b3b;
+  text-shadow:
+    0 0 10px rgba(255,0,0,0.8),
+    0 0 20px rgba(255,0,0,0.6);
+}
+
+/* label */
+.label {
+  opacity: 0.9;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box" id="box">
+  <span>🏆</span>
+  <span id="num">0</span>
+  <span>/10</span>
+  <span class="label">wins</span>
+</div>
+
+<script>
+let wins = 0;
+let locked = false;
+
+const num = document.getElementById("num");
+const box = document.getElementById("box");
+
+/* carregar posição salva */
+const savedX = localStorage.getItem("overlayX");
+const savedY = localStorage.getItem("overlayY");
+
+if (savedX && savedY) {
+  box.style.left = savedX + "px";
+  box.style.top = savedY + "px";
+}
+
+/* atualizar visual */
+function render() {
+  num.textContent = wins;
+
+  if (wins < 0) {
+    num.classList.add("negativo");
+  } else {
+    num.classList.remove("negativo");
+  }
+}
+
+/* teclas */
+document.addEventListener("keydown", (e) => {
+
+  if (e.key === "Home") {
+    locked = !locked;
+    return;
+  }
+
+  if (locked) return;
+
+  if (e.key === "ArrowUp") {
+    wins++;
+    render();
+  }
+
+  if (e.key === "ArrowDown") {
+    wins--;
+    render();
+  }
+});
+
+/* arrastar + salvar posição */
+let dragging = false;
+let offsetX = 0;
+let offsetY = 0;
+
+box.addEventListener("mousedown", (e) => {
+  dragging = true;
+  offsetX = e.clientX - box.offsetLeft;
+  offsetY = e.clientY - box.offsetTop;
+  box.style.cursor = "grabbing";
+});
+
+document.addEventListener("mousemove", (e) => {
+  if (dragging) {
+    const newX = e.clientX - offsetX;
+    const newY = e.clientY - offsetY;
+
+    box.style.left = newX + "px";
+    box.style.top = newY + "px";
+
+    localStorage.setItem("overlayX", newX);
+    localStorage.setItem("overlayY", newY);
+  }
+});
+
+document.addEventListener("mouseup", () => {
+  dragging = false;
+  box.style.cursor = "grab";
+});
+
+render();
+</script>
+
+</body>
+</html>
