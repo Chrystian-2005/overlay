@@ -6,216 +6,204 @@
 
 <style>
 :root {
-  --page-bg: #f3f3f3;
-  --panel-bg: linear-gradient(145deg, #171717, #0f0f0f);
-  --panel-border: rgba(255,255,255,0.06);
-  --panel-shadow: 0 10px 28px rgba(0,0,0,0.35);
-  --text-main: #ffffff;
-  --text-soft: #d8d8d8;
+  --bg: #f4f5f7;
+  --panel: #111315;
+  --panel-2: #181b1f;
+  --border: rgba(255,255,255,0.06);
+  --text: #ffffff;
+  --muted: #bfc5cc;
   --accent: #00f5d4;
-  --input-bg: #f4f4f4;
+  --input-bg: #f1f3f5;
   --input-text: #111111;
-  --button-text: #111111;
-  --muted: rgba(255,255,255,0.72);
+  --shadow: 0 12px 28px rgba(0,0,0,0.28);
+}
+
+body.dark {
+  --bg: #0c0e11;
+  --panel: #111315;
+  --panel-2: #181b1f;
+  --border: rgba(255,255,255,0.06);
+  --text: #ffffff;
+  --muted: #bfc5cc;
+  --accent: #00f5d4;
+  --input-bg: #f1f3f5;
+  --input-text: #111111;
+  --shadow: 0 14px 30px rgba(0,0,0,0.45);
 }
 
 html, body {
   margin: 0;
   padding: 0;
-  overflow: hidden;
   width: fit-content;
   height: fit-content;
+  overflow: hidden;
   font-family: Arial, sans-serif;
-  background: var(--page-bg);
+  background: var(--bg);
 }
 
-body.site-dark {
-  --page-bg: #111111;
-}
-
-body.site-light {
-  --page-bg: #f3f3f3;
-}
-
+/* LIVE OVERLAY */
 .overlay {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
+  padding: 6px 10px;
+  color: #fff;
   font-size: 34px;
-  font-weight: bold;
-  color: white;
-  text-shadow: 0 0 10px black, 0 0 20px black;
+  font-weight: 800;
   white-space: nowrap;
+  border-radius: 12px;
+  background: transparent;
+}
+
+.overlay.live {
+  background: rgba(0,0,0,0.28);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
 }
 
 #num {
-  min-width: 25px;
+  min-width: 24px;
   text-align: center;
 }
 
 .negativo {
-  color: #ff3b3b !important;
+  color: #ff4d4f !important;
 }
 
+/* CONTROL PANEL */
 .panel {
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
   display: none;
-  background: transparent;
+  padding: 24px;
+  box-sizing: border-box;
+  min-width: 980px;
+  min-height: 640px;
+  background:
+    radial-gradient(circle at top left, rgba(0,245,212,0.08), transparent 30%),
+    linear-gradient(180deg, #0e1013 0%, #090b0d 100%);
 }
 
 .topbar {
   display: flex;
-  gap: 10px;
-  margin-bottom: 12px;
-  align-items: stretch;
-}
-
-.mini-card {
-  width: 180px;
-  background: var(--panel-bg);
-  border: 1px solid var(--panel-border);
-  border-radius: 16px;
-  box-shadow: var(--panel-shadow);
-  padding: 12px;
-  color: var(--text-main);
-}
-
-.mini-card h3 {
-  margin: 0 0 10px;
-  font-size: 14px;
-  color: var(--accent);
+  gap: 16px;
+  margin-bottom: 18px;
 }
 
 .grid {
-  display: flex;
-  gap: 12px;
-  align-items: stretch;
-  flex-wrap: wrap;
-  max-width: 900px;
+  display: grid;
+  grid-template-columns: repeat(4, 220px);
+  gap: 16px;
+  align-items: start;
 }
 
 .card {
-  background: var(--panel-bg);
-  border: 1px solid var(--panel-border);
-  padding: 14px;
-  border-radius: 16px;
-  width: 180px;
-  min-height: 180px;
-  box-shadow: var(--panel-shadow);
-  color: var(--text-main);
+  background: linear-gradient(180deg, var(--panel-2), var(--panel));
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  padding: 16px;
   box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
+  min-height: 220px;
 }
 
 .card.wide {
-  width: 756px;
+  grid-column: 1 / span 4;
   min-height: auto;
 }
 
 .card h3 {
   margin: 0 0 10px;
-  font-size: 15px;
+  font-size: 18px;
   color: var(--accent);
 }
 
-button {
-  width: 100%;
-  margin-top: 7px;
-  padding: 9px 10px;
-  border: none;
-  border-radius: 10px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: transform .12s ease, filter .12s ease, opacity .12s ease;
+.label-soft {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.35;
+  min-height: 34px;
+  margin-bottom: 10px;
 }
-
-button:hover {
-  transform: translateY(-1px);
-  filter: brightness(1.04);
-}
-
-button:active {
-  transform: translateY(0);
-}
-
-.add { background: #18e7c8; color: #0c0c0c; }
-.sub { background: #ff4747; color: white; }
-.reset { background: #ffae00; color: #111111; }
-.apply { background: #e9e9e9; color: #111111; }
-.mode { background: #2b2b2b; color: white; }
-.mode.secondary { background: #dcdcdc; color: #111111; }
 
 input {
   width: 100%;
-  margin-top: 7px;
-  padding: 10px 11px;
-  border-radius: 10px;
-  border: none;
   box-sizing: border-box;
+  padding: 12px 12px;
+  border-radius: 12px;
+  border: none;
   outline: none;
   background: var(--input-bg);
   color: var(--input-text);
-  font-size: 14px;
+  font-size: 15px;
+  margin-bottom: 10px;
 }
 
 input::placeholder {
   color: rgba(0,0,0,0.42);
 }
 
+button {
+  width: 100%;
+  border: none;
+  border-radius: 12px;
+  padding: 12px;
+  font-weight: 800;
+  font-size: 15px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  transition: transform .12s ease, filter .12s ease, opacity .12s ease;
+}
+
+button:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.03);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+.add { background: #19e6c8; color: #07100e; }
+.sub { background: #ff4747; color: #fff; }
+.reset { background: #ffb000; color: #111; }
+.apply { background: #ececec; color: #111; }
+.mode-dark { background: #1c1f24; color: #fff; }
+.mode-light { background: #ececec; color: #111; }
+
 .lock-btn {
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   gap: 8px;
-  color: white;
+  color: #fff;
 }
 
-.locked-style {
-  background: #5a1f1f !important;
-}
-
-.unlocked-style {
-  background: #1c4732 !important;
-}
+.locked-style { background: #612222 !important; }
+.unlocked-style { background: #1e4f39 !important; }
 
 .help-list {
-  font-size: 14px;
-  line-height: 1.62;
-  color: var(--text-soft);
-}
-
-.help-line {
-  margin: 0 0 2px;
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.7;
 }
 
 .help-note {
-  margin-top: 10px;
+  margin-top: 12px;
   font-size: 13px;
   color: var(--muted);
-}
-
-.label-soft {
-  font-size: 13px;
-  color: var(--muted);
-  margin-bottom: 4px;
 }
 </style>
 </head>
 
-<body class="site-light">
+<body class="light">
 
-<div class="overlay">
+<div class="overlay live">
   🏆 <span id="num">0</span><span id="max">/10</span> <span id="label">wins</span>
 </div>
 
 <div class="panel" id="panel">
-
   <div class="topbar">
-    <div class="mini-card">
+    <div class="card" style="width:220px; min-height:auto;">
       <h3>Bloqueo</h3>
       <button id="lockBtn" class="lock-btn unlocked-style" onclick="toggleLock()">
         <span id="lockIcon">🔓</span>
@@ -223,18 +211,17 @@ input::placeholder {
       </button>
     </div>
 
-    <div class="mini-card">
+    <div class="card" style="width:220px; min-height:auto;">
       <h3>Modo visual</h3>
-      <button class="mode" onclick="setTheme('dark')">Modo oscuro</button>
-      <button class="mode secondary" onclick="setTheme('light')">Modo claro</button>
+      <button class="mode-dark" onclick="setTheme('dark')">Modo oscuro</button>
+      <button class="mode-light" onclick="setTheme('light')">Modo claro</button>
     </div>
   </div>
 
   <div class="grid">
-
     <div class="card">
       <h3>Valor actual</h3>
-      <div class="label-soft">Escribe un número exacto</div>
+      <div class="label-soft">Escribe un número exacto manualmente</div>
       <input id="manualInput" placeholder="Ex: 0">
       <button class="apply action-btn" onclick="setValue()">Aplicar</button>
       <button class="reset action-btn" onclick="resetValue()">reset</button>
@@ -242,7 +229,7 @@ input::placeholder {
 
     <div class="card">
       <h3>Meta final</h3>
-      <div class="label-soft">Número después de la barra</div>
+      <div class="label-soft">Cambia el número después de la barra</div>
       <input id="maxInput" placeholder="Ex: 10">
       <button class="apply action-btn" onclick="setMax()">Aplicar</button>
       <button class="reset action-btn" onclick="resetMax()">reset</button>
@@ -250,7 +237,7 @@ input::placeholder {
 
     <div class="card">
       <h3>Texto</h3>
-      <div class="label-soft">Palabra final del overlay</div>
+      <div class="label-soft">Cambia la palabra final del overlay</div>
       <input id="labelInput" placeholder="Ex: wins">
       <button class="apply action-btn" onclick="setLabel()">Aplicar</button>
       <button class="reset action-btn" onclick="resetLabel()">reset</button>
@@ -266,26 +253,23 @@ input::placeholder {
 
     <div class="card wide">
       <h3>Guía de controles</h3>
-
       <div class="help-list">
-        <div class="help-line">⬆️ or = or + → suma +1</div>
-        <div class="help-line">⬇️ or - → resta -1</div>
-        <div class="help-line">0 → resetea el valor actual a 0</div>
-        <div class="help-line">Home → bloquea / desbloquea el control</div>
-        <div class="help-line">🔒 / 🔓 → hace lo mismo que Home</div>
-        <div class="help-line">Meta final → cambia el número después de la barra</div>
-        <div class="help-line">Texto → cambia la palabra final</div>
-        <div class="help-line">Valor actual → escribe un número exacto manualmente</div>
-        <div class="help-line">reset de Meta final → vuelve a 10</div>
-        <div class="help-line">reset de Texto → vuelve a wins</div>
-        <div class="help-line">reset de Valor actual → vuelve a 0</div>
+        <div>⬆️ or = or + → suma +1</div>
+        <div>⬇️ or - → resta -1</div>
+        <div>0 → resetea el valor actual a 0</div>
+        <div>Home → bloquea / desbloquea el control</div>
+        <div>🔒 / 🔓 → hace lo mismo que Home</div>
+        <div>Meta final → cambia el número después de la barra</div>
+        <div>Texto → cambia la palabra final</div>
+        <div>Valor actual → escribe un número exacto manualmente</div>
+        <div>reset de Meta final → vuelve a 10</div>
+        <div>reset de Texto → vuelve a wins</div>
+        <div>reset de Valor actual → vuelve a 0</div>
       </div>
-
       <div class="help-note">
         Cuando el control está bloqueado, ni las teclas ni los botones cambian nada.
       </div>
     </div>
-
   </div>
 </div>
 
@@ -317,22 +301,21 @@ let locked = false;
 const num = document.getElementById("num");
 const maxEl = document.getElementById("max");
 const labelEl = document.getElementById("label");
-
 const maxInput = document.getElementById("maxInput");
 const labelInput = document.getElementById("labelInput");
 const manualInput = document.getElementById("manualInput");
-
 const lockBtn = document.getElementById("lockBtn");
 const lockIcon = document.getElementById("lockIcon");
 const lockText = document.getElementById("lockText");
-
 const bodyEl = document.body;
+const overlayEl = document.querySelector(".overlay");
 
 const params = new URLSearchParams(location.search);
 const isControl = params.get("view") === "control";
 
 if (isControl) {
   document.getElementById("panel").style.display = "block";
+  overlayEl.classList.remove("live");
 }
 
 function updateLockUI() {
@@ -359,15 +342,14 @@ function updateLockUI() {
 }
 
 window.setTheme = (mode) => {
-  bodyEl.classList.remove("site-light", "site-dark");
-  bodyEl.classList.add(mode === "dark" ? "site-dark" : "site-light");
+  bodyEl.classList.remove("light", "dark");
+  bodyEl.classList.add(mode === "dark" ? "dark" : "light");
 };
 
 // sync wins
 onValue(winsRef, s => {
   wins = s.val() ?? 0;
   num.textContent = wins;
-
   if (wins < 0) num.classList.add("negativo");
   else num.classList.remove("negativo");
 });
